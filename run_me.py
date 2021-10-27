@@ -76,6 +76,7 @@ def import_layout(nodes_file, edges_file, traffic_agents):
             gates_xy.append((row["x_pos"],row["y_pos"]))
 
         if row["type"] == "intersection":
+            # FINISH THIS
             traffic_agents.append(Traffic_agent(node_properties["id"],
                                                 node_properties["x_pos"],
                                                 node_properties["y_pos"],
@@ -239,9 +240,9 @@ while running:
 
     if t == 1:
         # ac = Aircraft(0, 'A', 37,36,t, nodes_dict) #As an example we will create one aicraft arriving at node 37 with the goal of reaching node 36
-        ac1 = Aircraft(0, 'D', 97,37,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-        ac2 = Aircraft(1, 'D', 37,97,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-        ac3 = Aircraft(2, 'D', 35, 38, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
+        ac1 = Aircraft(0, 'A', 97,37,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
+        ac2 = Aircraft(1, 'A', 37,97,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
+        ac3 = Aircraft(2, 'A', 35, 38, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
         # ac4 = Aircraft(3, 'D', 39, 36, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
         # aircraft_lst.append(ac)
         aircraft_lst.append(ac1)

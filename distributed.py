@@ -55,7 +55,7 @@ def traffic_identification(traffic_agents, radar_current_states):
     approach_between_node_list = []
     for radar_object in radar_current_states:  # loop through ac's in the global radar
         for traffic_agent in traffic_agents:  # loop through existing traffic agents at intersection points
-            for neighbor in traffic_agent['heading']:  # loop through neighbors of traffic agents
+            for neighbor in traffic_agent.heading:  # loop through neighbors of traffic agents
                 neighbor_node = neighbor[0]
                 heading_neighbor = neighbor[1]
                 if radar_object['loc'] == neighbor_node:  # if an ac in the neighborhood of a traffic agent
@@ -73,19 +73,18 @@ def traffic_identification(traffic_agents, radar_current_states):
                                                     'xyposition': radar_object['xyposition'],
                                                     'heading': radar_object['hdg'],
                                                     'aircraft': radar_object['aircraft'],
-                                                    'traffic_agent_id': traffic_agent['id'],
-                                                    'traffic_agent_xypos': traffic_agent['xy_pos']})
+                                                    'traffic_agent_id': traffic_agent.id,
+                                                    'traffic_agent_xypos': traffic_agent.xy_pos})
 
                         # print('hdg', heading_neighbor ,{'time': radar_object['time'], 'node': radar_object['loc'], 'xyposition': radar_object['xyposition'],
                         #                         'aircraft': radar_object['aircraft'], 'traffic_agent': traffic_agent['id']})
-                if radar_object['xyposition'] == traffic_agent[
-                    'xy_pos']:  # if an ac is at the position of a traffic agent
+                if radar_object['xyposition'] == traffic_agent.xy_pos:  # if an ac is at the position of a traffic agent
                     approach_between_node_list.append({'time': radar_object['time'], 'node': radar_object['loc'],
                                                        'xyposition': radar_object['xyposition'],
                                                        'heading': radar_object['hdg'],
                                                        'aircraft': radar_object['aircraft'],
-                                                       'traffic_agent_id': traffic_agent['id'],
-                                                       'traffic_agent_xypos': traffic_agent['xy_pos']})
+                                                       'traffic_agent_id': traffic_agent.id,
+                                                       'traffic_agent_xypos': traffic_agent.xy_pos})
 
     # print('between', approach_between_node_list)
     for first_ac in approach_agent_list:  # identify ac's heading towards the same traffic agent
