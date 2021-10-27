@@ -12,6 +12,7 @@ import random
 from single_agent_planner import calc_heuristics
 from visualization import map_initialization, map_running
 from Aircraft import Aircraft
+from Traffic_agent import Traffic_agent
 from independent import run_independent_planner
 from prioritized import run_prioritized_planner
 from distributed import run_distributed_planner
@@ -75,7 +76,13 @@ def import_layout(nodes_file, edges_file, traffic_agents):
             gates_xy.append((row["x_pos"],row["y_pos"]))
 
         if row["type"] == "intersection":
-            traffic_agents.append(node_properties)
+            traffic_agents.append(Traffic_agent(node_properties["id"],
+                                                node_properties["x_pos"],
+                                                node_properties["y_pos"],
+                                                node_properties["xy_pos"],
+                                                node_properties["type"],
+                                                node_properties["neighbors"],
+                                                node_properties["heading"]))
 
     #Specify node ids of gates, departure runways and arrival runways in a dict
     start_and_goal_locations = {"gates": gates_xy, 
