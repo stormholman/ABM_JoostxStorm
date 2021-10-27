@@ -11,7 +11,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, heuristics, t, traffic_age
     radar_current_states = []
     for ac in aircraft_lst:
         constraints = []
-        if ac.status == "taxiing":
+        if ac.status == "taxiing" or ac.status == "at_gate":
             radar_current_state = {"aircraft": ac.id,
                                    "xyposition": ac.position,
                                    "loc": ac.from_to[0],
@@ -50,6 +50,38 @@ def run_distributed_planner(aircraft_lst, nodes_dict, heuristics, t, traffic_age
 
 # Determine if an aircraft is in the area of a traffic agent and also is heading towards it
 # Identify if multiple ac's are heading to 1 intersection
+
+###########################################################################################################
+# Ik zou  blijven werken met aircraft objects. Maak hiervan een dict met het aircraft object en het traffic agent object.
+#
+# Voorbeeld:
+#
+# def traffic_identification(traffic_agents, aircraft_lst, t):
+#     approach_agent_list = []
+#     approach_between_node_list = []
+#     for ac in aircraft_lst:  # loop through ac's in the global radar
+#         ac_loc = ac.from_to[0]
+#         for traffic_agent in traffic_agents:  # loop through existing traffic agents at intersection points
+#             for neighbor in traffic_agent.heading:  # loop through neighbors of traffic agents
+#                 neighbor_node = neighbor[0]
+#                 heading_neighbor = neighbor[1]
+#                 if ac_loc == neighbor_node:  # if an ac in the neighborhood of a traffic agent
+#                     if heading_neighbor == 0:  # flip heading with 180 degrees to achieve "to" instead of "from" a node
+#                         heading_neighbor = 180
+#                     elif heading_neighbor == 180:
+#                         heading_neighbor = 0
+#                     elif heading_neighbor == 270:
+#                         heading_neighbor = 90
+#                     else:
+#                         heading_neighbor = 270
+#                     if ac.heading == heading_neighbor:  # if an ac is going towards an intersection point
+
+#                         approach_agent_list.append({'ac': ac, 'traffic_agent': traffic_agent}) <------------------
+
+#
+#                 if ac.position == traffic_agent.xy_pos:  # if an ac is at the position of a traffic agent
+#                     approach_agent_list.append({'ac': ac, 'traffic_agent': traffic_agent})
+######################################################################################################################################
 def traffic_identification(traffic_agents, radar_current_states):
     approach_agent_list = []
     approach_between_node_list = []
