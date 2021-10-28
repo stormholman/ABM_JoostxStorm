@@ -43,6 +43,7 @@ class Aircraft(object):
         self.position = (0,0) #xy position on map
         self.fieldofview = None
 
+
     def get_heading(self, xy_start, xy_next):
         """
         Determines heading of an aircraft based on a start and end xy position.
@@ -113,6 +114,7 @@ class Aircraft(object):
             self.fieldofview = [(self.position[0] - 1.5, self.position[1] - 1.5), (self.position[0] + 1.5, self.position[1] - 1.5)]
         if self.heading == 270:
             self.fieldofview = [(self.position[0] + 1.5, self.position[1] - 1.5), (self.position[0] + 1.5, self.position[1] + 1.5)]
+
 
         #Check if goal is reached or if to_node is reached
         if self.position == xy_to and self.path_to_goal[0][1] == t+dt: #If with this move its current to node is reached

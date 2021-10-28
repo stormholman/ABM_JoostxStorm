@@ -20,7 +20,6 @@ def run_CBS(aircraft_lst, nodes_dict, edges_dict, heuristics, t):
 
     while open_list:
         p = pop_node(open_list)
-
         if not p['collisions']:
             for ac in aircraft_lst:
                 if ac.status == "taxiing":
