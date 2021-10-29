@@ -9,40 +9,18 @@ from single_agent_planner import simple_single_agent_astar
 ######################################################################################################################################
                                                         # Distributed Runner
 ######################################################################################################################################
-
+constraints = []
 def run_distributed_planner(aircraft_lst, nodes_dict, heuristics, t, traffic_agents):
     radar_current_states = []
     for ac in aircraft_lst:
-        constraints = []
-        if ac.status == "taxiing" or ac.status == "at_gate":
-            radar_current_state = {"aircraft": ac.id,
-                                   "xyposition": ac.position,
-                                   "loc": ac.from_to[0],
-                                   "hdg": ac.heading,
-                                   "time": t}
-            radar_current_states.append(radar_current_state)
-
-        if traffic_identification_intersection_nodes(traffic_agents, radar_current_states):
-            for x in traffic_identification_intersection_nodes(traffic_agents, radar_current_states):
-                constraints.append(x)
-
-        if traffic_identification_between_nodes(traffic_agents, radar_current_states):
-            for y in traffic_identification_between_nodes(traffic_agents, radar_current_states):
-                constraints.append(y)
-
-
-        if constraints:
-            print('constraints',constraints)
-        constraints = []
 
         if ac.spawntime == t:  # maybe not necessary
             start_node = ac.start  # node from which planning should be done
             # print('start_node agent', ID, start_node, 'time', t)
-            goal_node = ac.goal
             ac.status = "taxiing"
             ac.position = nodes_dict[ac.start]["xy_pos"]
             # print('root constraints', root['constraints'])
-            success, path = simple_single_agent_astar(ac.id, nodes_dict, start_node, goal_node, heuristics, t, constraints)
+            success, path = simple_single_agent_astar(ac.id, nodes_dict,  ac.start, ac.goal, heuristics, t, constraints)
 
             if path is None:
                 raise BaseException('No solutions')
@@ -60,6 +38,67 @@ def run_distributed_planner(aircraft_lst, nodes_dict, heuristics, t, traffic_age
             # Check the path
             if path[0][1] != t:
                 raise Exception("Something is wrong with the timing of the path planning")
+
+        if ac.status == "taxiing" or ac.status == "at_gate":
+            radar_current_state = {"aircraft": ac.id,
+                                   "xyposition": ac.position,
+                                   "loc": ac.from_to[0],
+                                   "hdg": ac.heading,
+                                   "time": t}
+            radar_current_states.append(radar_current_state)
+
+        if traffic_identification_intersection_nodes(traffic_agents, radar_current_states):
+            for x in traffic_identification_intersection_nodes(traffic_agents, radar_current_states):
+                for constraint in constraints:
+                    constraints.append(x)
+            print(constraints)
+            success, path = simple_single_agent_astar(x['agent'], nodes_dict,  ac.from_to[0], ac.goal, heuristics, t, constraints)
+
+            if path is None:
+                raise BaseException('No solutions')
+            # print('path', root['paths'])
+
+            if success:
+                ac.path_to_goal = path[1:]
+                # print("ac_path", ac.path_to_goal, 'time', self.t)
+                # self.push_locations_to_radar(get_location(ac.path_to_goal, self.t), ID)
+                next_node_id = ac.path_to_goal[0][0]  # next node is first node in path_to_goal
+                ac.from_to = [path[0][0], next_node_id]
+                print("Path AC", ac.id, ":", path)
+            else:
+                raise Exception("No solution found for", ac.id)
+            # Check the path
+            if path[0][1] != t:
+                raise Exception("Something is wrong with the timing of the path planning")
+
+        if traffic_identification_between_nodes(traffic_agents, radar_current_states):
+            for y in traffic_identification_between_nodes(traffic_agents, radar_current_states):
+                constraints.append(y)
+            print(constraints)
+            success, path = simple_single_agent_astar(y['agent'], nodes_dict, ac.from_to[0], ac.goal, heuristics, t, constraints)
+
+            if path is None:
+                raise BaseException('No solutions')
+            # print('path', root['paths'])
+
+            if success:
+                ac.path_to_goal = path[1:]
+                # print("ac_path", ac.path_to_goal, 'time', self.t)
+                # self.push_locations_to_radar(get_location(ac.path_to_goal, self.t), ID)
+                next_node_id = ac.path_to_goal[0][0]  # next node is first node in path_to_goal
+                ac.from_to = [path[0][0], next_node_id]
+                print("Path AC", ac.id, ":", path)
+            else:
+                raise Exception("No solution found for", ac.id)
+            # Check the path
+            if path[0][1] != t:
+                raise Exception("Something is wrong with the timing of the path planning")
+
+        if constraints:
+            print('constraints',constraints)
+
+
+
 
 
 
@@ -201,23 +240,24 @@ def grant_priority_intersections(first_ac, sec_ac):
 
     if Relative_incoming_ac_comes_from == "R":
         print('aircraft', first_ac['aircraft'], 'should stop')
-        constraint = {'aircraft': first_ac['aircraft'], 'node': first_ac['traffic_agent_id'], 'timestep': first_ac['time'] + 0.5}
+        constraints.append({'agent': sec_ac['aircraft'], 'loc': sec_ac['traffic_agent_id'], 'timestep': first_ac['time'] + 0.5})
 
+        constraints.append({'agent': first_ac['aircraft'], 'loc': first_ac['node'], 'timestep': first_ac['time'] + 1})
 
     if Relative_incoming_ac_comes_from == "F":
         if first_ac['heading'] == 90 or first_ac['heading'] == 180:
-            print('aircraftt', sec_ac['aircraft'], 'should stop')
-            constraint.append({'aircraft': sec_ac['aircraft'], 'node': sec_ac['traffic_agent_id'],
+            print('aircraft', sec_ac['aircraft'], 'should stop')
+            constraints.append({'agent': first_ac['aircraft'], 'loc': first_ac['traffic_agent_id'],
                           'timestep': sec_ac['time'] + 0.5})
-            constraint.append({'aircraft': sec_ac['aircraft'], 'node': first_ac['node'],
+            constraints.append({'agent': sec_ac['aircraft'], 'loc': first_ac['node'],
                           'timestep': sec_ac['time'] + 1})
         if sec_ac['heading'] == 90 or sec_ac['heading'] == 180:
             print('aircraft', first_ac['aircraft'], 'should stop')
-            constraint.append({'aircraft': first_ac['aircraft'], 'node': first_ac['traffic_agent_id'],
-                          'timestep': first_ac['time'] + 0.5})
-            constraint.append({'aircraft': first_ac['aircraft'], 'node': sec_ac['node'],
+            constraints.append({'agent': sec_ac['aircraft'], 'loc': sec_ac['traffic_agent_id'],
+                          'timestep': sec_ac['time'] + 0.5})
+            constraints.append({'agent': first_ac['aircraft'], 'loc': sec_ac['node'],
                           'timestep': first_ac['time'] + 1})
-    return constraint
+    return constraints
 
 ######################################################################################################################################
                                                         # Between Nodes
@@ -287,16 +327,16 @@ def grant_priority_between_nodes(first_ac, sec_ac):
     constraint = []
     if first_ac['heading'] == 90 or first_ac['heading'] == 180:
         print('aircraft', sec_ac['aircraft'], 'should stop')
-    constraint.append({'aircraft': sec_ac['aircraft'], 'node': sec_ac['traffic_agent_id'], #node must be between node
+    constraint.append({'agent': sec_ac['aircraft'], 'loc': sec_ac['traffic_agent_id'], #node must be between node
                        'timestep': sec_ac['time'] + 0.5})
-    constraint.append({'aircraft': sec_ac['aircraft'], 'node': sec_ac['node'],
+    constraint.append({'agent': sec_ac['aircraft'], 'loc': sec_ac['node'],
                        'timestep': sec_ac['time'] + 0.5})
 
     if sec_ac['heading'] == 90 or sec_ac['heading'] == 180:
         print('aircraft', first_ac['aircraft'], 'should stop')
-        constraint.append({'aircraft': first_ac['aircraft'], 'node': first_ac['traffic_agent_id'], #node must be between node
+        constraint.append({'agent': first_ac['aircraft'], 'loc': first_ac['traffic_agent_id'], #node must be between node
                            'timestep': first_ac['time'] + 0.5})
-        constraint.append({'aircraft': first_ac['aircraft'], 'node': first_ac['node'],
+        constraint.append({'agent': first_ac['aircraft'], 'loc': first_ac['node'],
                            'timestep': first_ac['time'] + 0.5})
 
     return constraint

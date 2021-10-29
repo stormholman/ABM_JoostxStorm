@@ -121,7 +121,7 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
     root = {'loc': from_node_id, 'g_val': 0, 'h_val': h_value, 'parent': None, 'timestep': time_start}
     push_node(open_list, root)
     closed_list[(root['loc'], root['timestep'])] = root
-    constraint_table = build_constraint_table(constraints, agent)
+    # constraint_table = build_constraint_table(constraints, agent)
 
     while len(open_list) > 0:
         curr = pop_node(open_list)
