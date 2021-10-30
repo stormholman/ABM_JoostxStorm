@@ -72,6 +72,9 @@ class Aircraft(object):
             else:
                 heading=self.heading
         else:
+            print(self.id)
+            print(xy_start)
+            print(xy_next)
             raise Exception("Invalid movement")
     
         self.heading = heading

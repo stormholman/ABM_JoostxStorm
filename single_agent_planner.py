@@ -123,9 +123,9 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
     closed_list[(root['loc'], root['timestep'])] = root
     # constraint_table = build_constraint_table(constraints, agent)
 
-    print('astar...')
+    print('Running astar for agent', agent, ', constraints: ', constraints)
     while len(open_list) > 0:
-        #print(len(open_list))
+        # print(len(open_list))
         curr = pop_node(open_list)
         if curr['loc'] == goal_node_id and curr['timestep'] >= earliest_goal_timestep:
             return True, get_path(curr)
