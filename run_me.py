@@ -15,7 +15,7 @@ from Aircraft import Aircraft
 from Traffic_agent import Traffic_agent
 from independent import run_independent_planner
 from prioritized import run_prioritized_planner
-from distributed import run_distributed_planner
+from distributed2 import run_distributed_planner
 from cbs import run_CBS
 
 #%% SET SIMULATION PARAMETERS
@@ -32,7 +32,7 @@ planner = "Distributed" #choose which planner to use (currently only Independent
 #Visualization (can also be changed)
 plot_graph = False    #show graph representation in NetworkX
 visualization = True        #pygame visualization
-visualization_speed = 0.1 #set at 0.1 as default
+visualization_speed = 0.05 #set at 0.1 as default
 
 #%%Function definitions
 def import_layout(nodes_file, edges_file, traffic_agents):
@@ -76,7 +76,6 @@ def import_layout(nodes_file, edges_file, traffic_agents):
             gates_xy.append((row["x_pos"],row["y_pos"]))
 
         if row["type"] == "intersection":
-            # FINISH THIS
             traffic_agents.append(Traffic_agent(node_properties["id"],
                                                 node_properties["x_pos"],
                                                 node_properties["y_pos"],
@@ -165,17 +164,17 @@ def create_graph(nodes_dict, edges_dict, plot_graph = True):
     return graph
 
 def aircraftplanner():
+    for ac in aircraft_lst:
+        if ac.from_to != [0, 0]:
+            ac.start = ac.from_to[0]
     if planner == "Independent":
         run_independent_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t)
     elif planner == "Prioritized":
         run_prioritized_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t)
     elif planner == "CBS":
-        for ac in aircraft_lst:
-            if ac.from_to != [0,0]:
-                ac.start = ac.from_to[0]
         run_CBS(aircraft_lst, nodes_dict, edges_dict, heuristics, t)
     elif planner == "Distributed":
-        run_distributed_planner(aircraft_lst, nodes_dict, heuristics, t, traffic_agents)
+        run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t, traffic_agents)
 
     else:
         raise Exception("Planner:", planner, "is not defined.")
@@ -210,7 +209,7 @@ print("Simulation Started")
 while running:
     t= round(t,2)
 
-    if planner == "Distributed":
+    if planner == "Distributed" and t % 0.5 == 0:
         aircraftplanner()
 
     #Check conditions for termination
@@ -238,23 +237,23 @@ while running:
     #     aircraft_lst.append(ac)
     #     aircraftplanner()
 
-    if t == 1:
-        # ac = Aircraft(0, 'A', 37,36,t, nodes_dict) #As an example we will create one aicraft arriving at node 37 with the goal of reaching node 36
-        ac1 = Aircraft(0, 'D', 97, 37,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-        ac2 = Aircraft(1, 'A', 37, 97,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-        ac3 = Aircraft(2, 'A', 35, 38, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-        # ac4 = Aircraft(3, 'D', 39, 36, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-        # aircraft_lst.append(ac)
-        aircraft_lst.append(ac1)
-        aircraft_lst.append(ac2)
-        aircraft_lst.append(ac3)
-        # aircraft_lst.append(ac4)
-        aircraftplanner()
-
-    if t == 3:
-        ac = Aircraft(3, 'A', 38, 35,t, nodes_dict)
-        aircraft_lst.append(ac)
-        aircraftplanner()
+    # if t == 1:
+    #     # ac = Aircraft(0, 'A', 37,36,t, nodes_dict) #As an example we will create one aicraft arriving at node 37 with the goal of reaching node 36
+    #     ac1 = Aircraft(0, 'A', 97, 37,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
+    #     ac2 = Aircraft(1, 'A', 37, 97,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
+    #     ac3 = Aircraft(2, 'A', 35, 38, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
+    #     # ac4 = Aircraft(3, 'D', 39, 36, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
+    #     # aircraft_lst.append(ac)
+    #     aircraft_lst.append(ac1)
+    #     aircraft_lst.append(ac2)
+    #     aircraft_lst.append(ac3)
+    #     # aircraft_lst.append(ac4)
+    #     aircraftplanner()
+    #
+    # if t == 3:
+    #     ac = Aircraft(3, 'A', 38, 35,t, nodes_dict)
+    #     aircraft_lst.append(ac)
+    #     aircraftplanner()
 
     # if t == 5:
     #     ac = Aircraft(2, 'A', 37,36,t, nodes_dict)
@@ -290,17 +289,17 @@ while running:
     #     aircraft_lst.append(ac4)
     #     aircraftplanner()
     #
-    # if (t % 2 == 0): # use this
-    #     if len(availableGates) > 0:
-    #         entry = random.choice([37, 38])
-    #         goal = random.choice(availableGates)
-    #         availableGates.remove(goal)
-    #         occupiedGates.append(goal)
-    #
-    #         ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict)
-    #         aircraft_lst.append(ac)
-    #         aircraftplanner()
-    #         numberOfAircraft += 1
+    if (t % 2 == 0): # use this
+        if len(availableGates) > 0:
+            entry = random.choice([37, 38])
+            goal = random.choice(availableGates)
+            availableGates.remove(goal)
+            occupiedGates.append(goal)
+
+            ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict)
+            aircraft_lst.append(ac)
+            aircraftplanner()
+            numberOfAircraft += 1
 
     # if t == 3:
     #     entry = 35

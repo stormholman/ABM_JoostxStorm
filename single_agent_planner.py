@@ -92,7 +92,7 @@ def is_constrained(constraints, agent, curr_loc, next_loc, next_time):
                     # print(next_time)
                     return True
 
-def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristics, time_start, constraints, status = "taxiing"):
+def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristics, time_start, constraints = [], status = "taxiing"):
     # def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     """
     Single agent A* search. Time start can only be the time that an agent is at a node.
@@ -123,7 +123,9 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
     closed_list[(root['loc'], root['timestep'])] = root
     # constraint_table = build_constraint_table(constraints, agent)
 
+    print('astar...')
     while len(open_list) > 0:
+        #print(len(open_list))
         curr = pop_node(open_list)
         if curr['loc'] == goal_node_id and curr['timestep'] >= earliest_goal_timestep:
             return True, get_path(curr)

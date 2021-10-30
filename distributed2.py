@@ -3,8 +3,6 @@ import heapq
 import random
 import copy
 from single_agent_planner import simple_single_agent_astar
-
-
 # # from run_me import node_to_xy
 # ######################################################################################################################################
 #                                                         # Distributed Runner
@@ -393,32 +391,109 @@ from single_agent_planner import simple_single_agent_astar
 # # Implement prioritized planner here
 # # """
 # #
-def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t):
+def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t, traffic_agents):
+    constraints = []
     for ac1 in aircraft_lst:
-        if ac1.spawntime == t:
-            #ac1.position = nodes_dict[ac1.start]["xy_pos"]
+        observations = []
+        if ac1.spawntime == t or ac1.departtime == t:
+            ac1.position = nodes_dict[ac1.start]["xy_pos"]
             ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)
-
         # Create awareness
         for ac2 in aircraft_lst:
             if ac1 != ac2:
                 if ac1.position and ac1.fieldofview and ac2.position and ac2.fieldofview:
                     if ac1.heading == 0:
-                        if 0 < ac2.position[1] - ac1.position[1] <= ac1.fieldofview[0][1] - ac1.position[1] + 0.1:
+                        if 0 < ac2.position[0] - ac1.position[0] <= ac1.fieldofview[0][1] - ac1.position[1] + 0.1:
                             if abs(ac2.position[1] - ac1.position[1] / abs(ac2.position[0] - ac1.position[0])) <= (1.5/1.5):
-                                print(ac2.id, "in view of", ac1.id)
+                                ac1.observations.append(ac2)
                     if ac1.heading == 270:
                         if 0 < ac2.position[0] - ac1.position[0] <= ac1.fieldofview[0][0] - ac1.position[0] + 0.1:
                             if abs(ac2.position[1] - ac1.position[1]) / abs(ac2.position[0] - ac1.position[0]) <= (1.5/1.5):
-                                print(ac2.id, "in view of", ac1.id)
+                                ac1.observations.append(ac2)
                     if ac1.heading == 180:
                         if 0 < ac1.position[1] - ac2.position[1] <= ac1.position[1] - ac1.fieldofview[0][1] + 0.1:
                             if abs(ac2.position[0] - ac1.position[0] / abs(ac1.position[1] - ac2.position[1])) <= (1.5/1.5):
-                                print(ac2.id, "in view of", ac1.id)
+                                ac1.observations.append(ac2)
                     if ac1.heading == 90:
+                            # print(ac1.position[0] - ac2.position[0])
+                            # print("<=")
+                            # print(ac1.position[0] - ac1.fieldofview[0][0] + 0.1)
+                            # print(0 < ac1.position[0] - ac2.position[0] <= ac1.position[0] - ac1.fieldofview[0][0] + 0.1)
+
                         if 0 < ac1.position[0] - ac2.position[0] <= ac1.position[0] - ac1.fieldofview[0][0] + 0.1:
                             if abs(ac2.position[1] - ac1.position[1]) / abs(ac1.position[0] - ac2.position[0]) <= (1.5/1.5):
-                                print(ac2.id, "in view of", ac1.id)
+                                ac1.observations.append(ac2)
+
+        nextintersection = find_next_intersection(ac1)
+        nextlinkage = find_next_linkage(ac1)
+
+        #intersection_id = nextintersection['id']
+
+        for observation in ac1.observations:
+            if nextintersection: # if ac1 has a next intersection
+                if nextintersection == find_next_intersection(observation):
+                    print(ac1.path_to_goal)
+                    print(observation.path_to_goal)
+                    print(nextintersection)
+                    print(find_next_intersection(observation))
+                    print("found intersection conflict between ac", ac1.id, "and", observation.id, 'at', nextintersection['id'])
+
+                    winner, loser = determine_right_of_way(ac1, observation, nextintersection)
+                    print(loser.id, 'giving way')
+                    constraints.append({'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 0.5})
+                    constraints.append({'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 1})
+
+                    print("added constraint:", {'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 1})
+                    print(constraints)
+                    success, path = simple_single_agent_astar(loser.id, nodes_dict, loser.from_to[0], loser.goal, heuristics, t,
+                                                              constraints)
+                    if success:
+                        loser.total_path = path
+                        loser.path_to_goal = path[1:]
+                        next_node_id = loser.path_to_goal[0][0]  # next node is first node in path_to_goal
+                        loser.from_to = [path[0][0], next_node_id]
+                        print("Path AC", loser.id, ":", path)
+
+            if nextlinkage: # if ac1 has a next intersection
+                if nextlinkage == find_next_linkage(observation):
+                    print(ac1.path_to_goal)
+                    print(observation.path_to_goal)
+                    print(nextlinkage)
+                    print(find_next_linkage(observation))
+                    print("found linkage conflict between ac", ac1.id, "and", observation.id, 'at', nextlinkage['id'])
+
+                    winner, loser = determine_right_of_way(ac1, observation, nextlinkage)
+                    print(loser.id, 'giving way')
+                    constraints.append({'agent': winner.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
+                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
+                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1})
+                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1.5})
+                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2})
+                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2.5})
+                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 3})
+
+                    print("added constraint:", {'agent': winner.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
+                    print("added constraint:", {'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
+                    print(constraints)
+
+                    success, path = simple_single_agent_astar(winner.id, nodes_dict, loser.from_to[0], loser.goal, heuristics, t,
+                                                              constraints)
+                    if success:
+                        loser.total_path = path
+                        loser.path_to_goal = path[1:]
+                        next_node_id = loser.path_to_goal[0][0]  # next node is first node in path_to_goal
+                        loser.from_to = [path[0][0], next_node_id]
+                        print("Path AC", loser.id, ":", path)
+
+                    success, path = simple_single_agent_astar(loser.id, nodes_dict, loser.from_to[0], loser.goal, heuristics, t,
+                                                              constraints)
+                    if success:
+                        loser.total_path = path
+                        loser.path_to_goal = path[1:]
+                        next_node_id = loser.path_to_goal[0][0]  # next node is first node in path_to_goal
+                        loser.from_to = [path[0][0], next_node_id]
+                        print("Path AC", loser.id, ":", path)
+
 
         # append to memory. Add weights to expected paths of remembered aircraft. Resolve conflicts that may occur
 
@@ -427,3 +502,53 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t)
         #         if ac.heading == 0:
         #             if otheraircraft.position[1] > ac.position[1]:
         #                 if otheraircraft.position[1] - ac.position[1]
+
+def determine_right_of_way(ac1, ac2, conflictnode):
+    print("determining right of way between", ac1.id, "and", ac2.id)
+    print(ac1.path_to_goal)
+    print(conflictnode)
+    print([node for node in ac1.path_to_goal if node[0] == conflictnode['id']])
+    node_ac1 = [node for node in ac1.path_to_goal if node[0] == conflictnode['id']][0]
+    node_ac2 = [node for node in ac2.path_to_goal if node[0] == conflictnode['id']][0]
+    index1 = ac1.path_to_goal.index(node_ac1)
+    index2 = ac2.path_to_goal.index(node_ac2)
+
+    if node_ac1[0] == 11 or node_ac1[0] == 12:  # give priority to aircraft leaving runways
+        if ac1.id < ac2.id:
+            return ac2, ac1 # winner, loser
+        else:
+            return ac1, ac2
+
+    if index1 == index2:
+        if ac1.id < ac2.id:
+            return ac1, ac2 # winner, loser
+        else:
+            return ac2, ac1
+    else:
+        if index1 < index2:
+            return ac1, ac2 # winner, loser
+        else:
+            return ac2, ac1
+
+
+
+# def appendobservation(ac1,ac2):
+#     ac1.observations.append({'agent': ac2.id,
+#                              'loc': ac2.from_to[0],
+#                              'heading': ac2.heading,
+#                              'position': ac2.position})
+
+def find_next_intersection(ac):
+    for node in ac.path_to_goal:
+        if ac.nodes_dict[node[0]]['type'] == "intersection":
+            if ac.nodes_dict[node[0]]['id'] == node[0]:
+                return ac.nodes_dict[node[0]]
+
+def find_next_linkage(ac):
+    for node in ac.path_to_goal:
+        if ac.nodes_dict[node[0]]['type'] == "between":
+            if ac.nodes_dict[node[0]]['id'] == node[0]:
+                return ac.nodes_dict[node[0]]
+
+def resolveconflicts():
+    pass

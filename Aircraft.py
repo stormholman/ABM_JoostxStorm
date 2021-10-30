@@ -43,6 +43,8 @@ class Aircraft(object):
         self.position = (0,0) #xy position on map
         self.fieldofview = None
 
+        self.observations = []
+
 
     def get_heading(self, xy_start, xy_next):
         """
@@ -152,7 +154,6 @@ class Aircraft(object):
             - nodes_dict: copy of the nodes_dict
             - edges_dict: edges_dict with current edge weights
         """
-
         if self.status == "taxiing":
             start_node = self.start #node from which planning should be done
             goal_node = self.goal #node to which planning should be done
@@ -163,7 +164,7 @@ class Aircraft(object):
                 self.path_to_goal = path[1:]
                 next_node_id = self.path_to_goal[0][0] #next node is first node in path_to_goal
                 self.from_to = [path[0][0], next_node_id]
-                #print("Path AC", self.id, ":", path)
+                print("Path AC", self.id, ":", path)
             else:
                 raise Exception("No solution found for", self.id)
             

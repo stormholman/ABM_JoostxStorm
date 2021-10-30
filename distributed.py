@@ -10,7 +10,7 @@ from single_agent_planner import simple_single_agent_astar
                                                         # Distributed Runner
 ######################################################################################################################################
 constraints = []
-def run_distributed_planner(aircraft_lst, nodes_dict, heuristics, t, traffic_agents):
+def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t, traffic_agents):
     radar_current_states = []
     for ac in aircraft_lst:
 
