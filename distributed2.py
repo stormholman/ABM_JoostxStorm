@@ -445,16 +445,10 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
 
                     # print("Added constraint:", {'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 1})
                     # print(constraints)
-                    success, path = simple_single_agent_astar(loser.id, nodes_dict, loser.from_to[0], loser.goal, heuristics, t,
-                                                              constraints)
-                    if success:
-                        loser.total_path = path
-                        loser.path_to_goal = path[1:]
-                        next_node_id = loser.path_to_goal[0][0]  # next node is first node in path_to_goal
-                        loser.from_to = [path[0][0], next_node_id]
-                        print("Path AC", loser.id, ":", path)
-                        nextintersection = find_next_intersection(ac1)
-                        nextlinkage = find_next_linkage(ac1)
+                    run_astar(loser, nodes_dict, loser.from_to[0], loser.goal, heuristics, t, constraints)
+
+                    nextintersection = find_next_intersection(ac1)
+                    nextlinkage = find_next_linkage(ac1)
 
             if nextlinkage: # if ac1 has a next intersection
                 if nextlinkage == find_next_linkage(observation):
@@ -478,27 +472,12 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                     # print("added constraint:", {'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
                     # print(constraints)
 
-                    success, path = simple_single_agent_astar(winner.id, nodes_dict, winner.from_to[0], winner.goal, heuristics, t,
-                                                              constraints)
-                    if success:
-                        winner.total_path = path
-                        winner.path_to_goal = path[1:]
-                        next_node_id = winner.path_to_goal[0][0]  # next node is first node in path_to_goal
-                        winner.from_to = [path[0][0], next_node_id]
-                        print("Path AC", winner.id, ":", path)
-                        nextintersection = find_next_intersection(ac1)
-                        nextlinkage = find_next_linkage(ac1)
+                    run_astar(winner, nodes_dict, winner.from_to[0], winner.goal, heuristics, t, constraints)
 
-                    success, path = simple_single_agent_astar(loser.id, nodes_dict, loser.from_to[0], loser.goal, heuristics, t,
-                                                              constraints)
-                    if success:
-                        loser.total_path = path
-                        loser.path_to_goal = path[1:]
-                        next_node_id = loser.path_to_goal[0][0]  # next node is first node in path_to_goal
-                        loser.from_to = [path[0][0], next_node_id]
-                        # print("Path AC", loser.id, ":", path)
-                        nextintersection = find_next_intersection(ac1)
-                        nextlinkage = find_next_linkage(ac1)
+                    run_astar(loser, nodes_dict, loser.from_to[0], loser.goal, heuristics, t, constraints)
+
+                    nextintersection = find_next_intersection(ac1)
+                    nextlinkage = find_next_linkage(ac1)
 
 
         # append to memory. Add weights to expected paths of remembered aircraft. Resolve conflicts that may occur
@@ -543,6 +522,17 @@ def determine_right_of_way(ac1, ac2, conflictnode):
 #                              'loc': ac2.from_to[0],
 #                              'heading': ac2.heading,
 #                              'position': ac2.position})
+
+def run_astar(ac, nodes_dict, from_to, goal, heuristics, t, constraints):
+    success, path = simple_single_agent_astar(ac.id, nodes_dict, from_to, goal, heuristics, t,
+                                              constraints)
+    if success:
+        ac.total_path = path
+        ac.path_to_goal = path[1:]
+        next_node_id = ac.path_to_goal[0][0]  # next node is first node in path_to_goal
+        ac.from_to = [path[0][0], next_node_id]
+
+    return success
 
 def find_next_intersection(ac):
     # print(ac.id)
