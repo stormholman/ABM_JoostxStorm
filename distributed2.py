@@ -45,7 +45,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
         for observation in ac1.observations:
             if nextintersection: # if ac1 has a next intersection
                 if nextintersection == find_next_intersection(observation):
-                    print(ac1.id, ac2.id, "intersection conflict at", nextintersection)
+                    #print(ac1.id, ac2.id, "intersection conflict at", nextintersection)
                     # print(ac1.path_to_goal)
                     # print(observation.path_to_goal)
                     # print(nextintersection)
@@ -181,7 +181,7 @@ def run_astar(ac, nodes_dict, from_to, goal, heuristics, t, constraints, lastdif
         ac.path_to_goal = path[1:]
         next_node_id = ac.path_to_goal[0][0]  # next node is first node in path_to_goal
         ac.from_to = [path[0][0], next_node_id]
-        print("New path path for AC", ac.id, ":", path)
+        #print("New path path for AC", ac.id, ":", path)
 
     return success
 

@@ -73,9 +73,6 @@ class Aircraft(object):
             else:
                 heading=self.heading
         else:
-            print(self.id)
-            print(xy_start)
-            print(xy_next)
             raise Exception("Invalid movement")
     
         self.heading = heading
@@ -135,6 +132,7 @@ class Aircraft(object):
                     self.from_to[0] = self.from_to[1]
                     self.goal = random.choice([1,2])
                     self.type = "D"
+
                 elif self.type == "D":
                     self.status = "departed"
                     self.departtime = t
