@@ -137,6 +137,7 @@ class Aircraft(object):
                     self.nodes_dict[11]['neighbors'] = {101.0, 11.0, 55.0, 62.0}
                     self.nodes_dict[12]['neighbors'] = {102.0, 12.0, 57.0, 63.0}
 
+
                 elif self.type == "D":
                     self.status = "departed"
                     self.departtime = t
