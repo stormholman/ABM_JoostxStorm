@@ -88,7 +88,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
 
             if nextlinkage: # if ac1 has a next intersection
                 if nextlinkage == find_next_linkage(observation):
-                    print(ac1.id, ac2.id, "linkage conflict at", nextlinkage)
+                    #print(ac1.id, ac2.id, "linkage conflict at", nextlinkage)
                     # print(ac1.path_to_goal)
                     # print(observation.path_to_goal)
                     # print(nextlinkage)
