@@ -3,6 +3,7 @@ import heapq
 import random
 import copy
 from single_agent_planner import simple_single_agent_astar
+from run_me import xy_to_node
 
 
 # from run_me import node_to_xy
@@ -325,6 +326,35 @@ def traffic_identification_between_nodes(traffic_agents, radar_current_states):
 
 def grant_priority_between_nodes(first_ac, sec_ac):
     constraint = []
+
+
+    between_loc = (0,0)
+    pos_first_ac = first_ac['xyposition']
+    pos_sec_ac = sec_ac['xyposition']
+    delta_x = pos_first_ac[0] - pos_sec_ac[0]
+    delta_y = pos_first_ac[1] - pos_sec_ac[1]
+    if delta_x == 0:
+        y_smallest = 0
+        if pos_first_ac[1] < pos_sec_ac[1]:
+            y_smallest = pos_first_ac[1]
+        else:
+            y_smallest = pos_sec_ac[1]
+        between_loc[0] = pos_sec_ac[0]
+        between_loc[1] = y_smallest + delta_y/2
+
+    if delta_y == 0:
+        x_smallest = 0
+        if pos_first_ac[0] < pos_sec_ac[0]:
+            x_smallest = pos_first_ac[0]
+        else:
+            x_smallest = pos_sec_ac[0]
+        between_loc[1] = pos_sec_ac[1]
+        between_loc[0] = x_smallest + delta_x/2
+
+    between_node = xy_to_node(between_loc)
+
+
+
     if first_ac['heading'] == 90 or first_ac['heading'] == 180:
         print('aircraft', sec_ac['aircraft'], 'should stop')
     constraint.append({'agent': sec_ac['aircraft'], 'loc': sec_ac['traffic_agent_id'], #node must be between node

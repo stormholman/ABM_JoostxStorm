@@ -14,7 +14,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
         # Create awareness
         for ac2 in aircraft_lst:
             if ac1 != ac2:
-                if ac1.position and ac1.fieldofview and ac2.position and ac2.fieldofview:
+                if ac1.position and ac1.fieldofview and ac2.position and ac2.fieldofview: # discuss
                     if ac1.heading == 0:
                         if 0 < ac2.position[0] - ac1.position[0] <= ac1.fieldofview[0][1] - ac1.position[1] + 0.1:
                             if abs(ac2.position[1] - ac1.position[1] / abs(ac2.position[0] - ac1.position[0])) <= (1.5/1.5):
@@ -52,7 +52,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                     # print(find_next_intersection(observation))
                     # print("found intersection conflict between ac", ac1.id, "and", observation.id, 'at', nextintersection['id'])
 
-                    ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t,
+                    ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, # discuss
                                [{'agent': ac1.id, 'loc': nextintersection['id'], 'timestep': t + 0.5},
                                 {'agent': ac1.id, 'loc': nextintersection['id'], 'timestep': t + 1}],
                               ac1.lastdifferentnode, False)
@@ -118,7 +118,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                     constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1.5})
                     constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2})
                     constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2.5})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 3})
+                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 3}) # discuss
 
                     # print("added constraint:", {'agent': winner.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
                     # print("added constraint:", {'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})

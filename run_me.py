@@ -128,6 +128,12 @@ def import_layout(nodes_file, edges_file, traffic_agents):
     
     return nodes_dict, edges_dict, start_and_goal_locations
 
+def xy_to_node(xy):
+    for x in range(1, len(nodes_dict)+1):
+        # print(len(nodes_dict))
+        if nodes_dict[x]['xy_pos'] == xy:
+            return nodes_dict[x]['id']
+
 def create_graph(nodes_dict, edges_dict, plot_graph = True):
     """
     Creates networkX graph based on nodes and edges and plots 
@@ -205,6 +211,8 @@ t= 0
 numberOfAircraft = 0
 availableGates = [98, 36, 35, 34, 97]
 occupiedGates = []
+seedtype = 0
+
 print("Simulation Started")
 while running:
     t= round(t,2)
@@ -289,8 +297,10 @@ while running:
     #     aircraft_lst.append(ac4)
     #     aircraftplanner()
     #
+    seedtype += 2
     if (t % 2 == 0): # use this
         if len(availableGates) > 0:
+            random.seed(seedtype)
             entry = random.choice([37, 38])
             goal = random.choice(availableGates)
             availableGates.remove(goal)

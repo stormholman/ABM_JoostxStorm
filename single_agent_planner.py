@@ -115,8 +115,8 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
     open_list = []
     closed_list = dict()
     earliest_goal_timestep = time_start
-    # print(from_node_id)
-    # print(goal_node_id)
+    print(from_node_id)
+    print(goal_node_id)
     # print(heuristics)
     h_value = heuristics[from_node_id][goal_node_id]
     root = {'loc': from_node_id, 'g_val': 0, 'h_val': h_value, 'parent': None, 'timestep': time_start}
