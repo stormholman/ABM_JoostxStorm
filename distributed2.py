@@ -51,7 +51,24 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                     # print(find_next_intersection(observation))
                     # print("found intersection conflict between ac", ac1.id, "and", observation.id, 'at', nextintersection['id'])
 
-                    winner, loser = determine_right_of_way(ac1, observation, nextintersection)
+                    ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                              ac1.lastdifferentnode, False)
+
+                    ac2_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                                       ac1.lastdifferentnode, False)
+
+                    if ac1_can_detour == False or ac2_can_detour == False:
+                        if ac1_can_detour:
+                            ac1 = loser
+                            ac2 = winner
+                        elif ac2_can_detour:
+                            ac2 = loser
+                            ac1 = winner
+                        else:
+                            print("Neither", ac1, "nor", ac2, "can detour")
+
+                    else:
+                        winner, loser = determine_right_of_way(ac1, observation, nextintersection)
                     # print(loser.id, 'giving way')
                     constraints.append({'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 0.5})
                     constraints.append({'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 1})
@@ -72,9 +89,24 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                     # print(find_next_linkage(observation))
                     # print("found linkage conflict between ac", ac1.id, "and", observation.id, 'at', nextlinkage['id'])
 
-                    winner, loser = determine_right_of_way(ac1, observation, nextlinkage)
+                    ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                              ac1.lastdifferentnode, False)
+
+                    ac2_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                                       ac1.lastdifferentnode, False)
+
+                    if ac1_can_detour == False or ac2_can_detour == False:
+                        if ac1_can_detour:
+                            ac1 = loser
+                            ac2 = winner
+                        elif ac2_can_detour:
+                            ac2 = loser
+                            ac1 = winner
+                        else:
+                            print("Neither", ac1, "nor", ac2, "can detour")
+                    else:
+                        winner, loser = determine_right_of_way(ac1, observation, nextlinkage)
                     # print(loser.id, 'giving way')
-                    constraints.append({'agent': winner.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
                     constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
                     constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1})
                     constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1.5})
@@ -130,18 +162,16 @@ def determine_right_of_way(ac1, ac2, conflictnode):
         else:
             return ac2, ac1
 
-
-
 # def appendobservation(ac1,ac2):
 #     ac1.observations.append({'agent': ac2.id,
 #                              'loc': ac2.from_to[0],
 #                              'heading': ac2.heading,
 #                              'position': ac2.position})
 
-def run_astar(ac, nodes_dict, from_to, goal, heuristics, t, constraints, lastdifferentnode):
+def run_astar(ac, nodes_dict, from_to, goal, heuristics, t, constraints, lastdifferentnode, changepath = True):
     success, path = simple_single_agent_astar(ac.id, nodes_dict, from_to, goal, heuristics, t,
                                               constraints, lastdifferentnode)
-    if success:
+    if success and changepath:
         ac.total_path = path
         ac.path_to_goal = path[1:]
         next_node_id = ac.path_to_goal[0][0]  # next node is first node in path_to_goal
