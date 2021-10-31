@@ -45,16 +45,21 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
         for observation in ac1.observations:
             if nextintersection: # if ac1 has a next intersection
                 if nextintersection == find_next_intersection(observation):
+                    print(ac1.id, ac2.id, "intersection conflict at", nextintersection)
                     # print(ac1.path_to_goal)
                     # print(observation.path_to_goal)
                     # print(nextintersection)
                     # print(find_next_intersection(observation))
                     # print("found intersection conflict between ac", ac1.id, "and", observation.id, 'at', nextintersection['id'])
 
-                    ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                    ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t,
+                               [{'agent': ac1.id, 'loc': nextintersection['id'], 'timestep': t + 0.5},
+                                {'agent': ac1.id, 'loc': nextintersection['id'], 'timestep': t + 1}],
                               ac1.lastdifferentnode, False)
 
-                    ac2_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                    ac2_can_detour = run_astar(ac2, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t,
+                                               [{'agent': ac2.id, 'loc': nextintersection['id'], 'timestep': t + 0.5},
+                                                {'agent': ac2.id, 'loc': nextintersection['id'], 'timestep': t + 1}],
                                        ac1.lastdifferentnode, False)
 
                     if ac1_can_detour == False or ac2_can_detour == False:
@@ -65,7 +70,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                             ac2 = loser
                             ac1 = winner
                         else:
-                            print("Neither", ac1, "nor", ac2, "can detour")
+                            print("Neither", ac1.id, ac1.position, "nor", ac2.id, ac2.position, "can detour for conflict at", nextintersection)
 
                     else:
                         winner, loser = determine_right_of_way(ac1, observation, nextintersection)
@@ -83,6 +88,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
 
             if nextlinkage: # if ac1 has a next intersection
                 if nextlinkage == find_next_linkage(observation):
+                    print(ac1.id, ac2.id, "linkage conflict at", nextlinkage)
                     # print(ac1.path_to_goal)
                     # print(observation.path_to_goal)
                     # print(nextlinkage)
@@ -92,7 +98,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                     ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
                               ac1.lastdifferentnode, False)
 
-                    ac2_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                    ac2_can_detour = run_astar(ac2, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
                                        ac1.lastdifferentnode, False)
 
                     if ac1_can_detour == False or ac2_can_detour == False:
@@ -103,7 +109,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                             ac2 = loser
                             ac1 = winner
                         else:
-                            print("Neither", ac1, "nor", ac2, "can detour")
+                            print("Neither", ac1.id, "nor", ac2.id,  "can detour for conflict at", nextlinkage)
                     else:
                         winner, loser = determine_right_of_way(ac1, observation, nextlinkage)
                     # print(loser.id, 'giving way')

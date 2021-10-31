@@ -134,6 +134,7 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
         nodes_dict[curr['loc']]["neighbors"].add(curr['loc'])  # Also consider "waiting"
 
         for neighbor in nodes_dict[curr['loc']]["neighbors"]:
+            print(neighbor)
             child = {'loc': neighbor,
                      'g_val': curr['g_val'] + 0.5,
                      'h_val': heuristics[neighbor][goal_node_id],
@@ -147,17 +148,18 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
             # has been waiting.
 
             ### Legacy (need to change prioritized/cbs as well) ###
-            if curr['parent']:
-                lastDifferentNode1 = curr['parent']
-                while lastDifferentNode1['parent'] and lastDifferentNode1['loc'] == curr['loc']:
-                    lastDifferentNode1 = lastDifferentNode1['parent']
-
-                # If child location reverses the aircraft do not consider that child node.
-                if child['loc'] == lastDifferentNode1['loc']:
-                    continue
+            # if curr['parent']:
+            #     lastDifferentNode1 = curr['parent']
+            #     while lastDifferentNode1['parent'] and lastDifferentNode1['loc'] == curr['loc']:
+            #         lastDifferentNode1 = lastDifferentNode1['parent']
+            #
+            #     # If child location reverses the aircraft do not consider that child node.
+            #     if child['loc'] == lastDifferentNode1['loc']:
+            #         continue
 
             ### New ###
             if child['loc'] == lastdifferentnode:
+                # print("constrained prev loc", lastdifferentnode)
                 continue
 
 
