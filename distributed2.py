@@ -118,7 +118,6 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                     # print("added constraint:", {'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
                     # print(constraints)
 
-
                     run_astar(winner, nodes_dict, winner.from_to[0], winner.goal, heuristics, t, constraints, winner.lastdifferentnode)
 
                     run_astar(loser, nodes_dict, loser.from_to[0], loser.goal, heuristics, t, constraints, loser.lastdifferentnode)
