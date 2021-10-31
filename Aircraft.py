@@ -137,9 +137,9 @@ class Aircraft(object):
                     self.nodes_dict[11]['neighbors'] = {101.0, 11.0, 55.0, 62.0}
                     self.nodes_dict[12]['neighbors'] = {102.0, 12.0, 57.0, 63.0}
 
-                    # remove node 44 to prevent "clogged taxiways" (this is the easy way out)
-                    self.nodes_dict[4]['neighbors'] = {43.0, 4.0, 95.0}
-                    self.nodes_dict[5]['neighbors'] = {96.0, 5.0, 45.0}
+                    # # remove node 44 to prevent "clogged taxiways" (this is the easy way out)
+                    # self.nodes_dict[4]['neighbors'] = {43.0, 4.0, 95.0}
+                    # self.nodes_dict[5]['neighbors'] = {96.0, 5.0, 45.0}
 
 
                 elif self.type == "D":
