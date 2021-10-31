@@ -92,7 +92,8 @@ def is_constrained(constraints, agent, curr_loc, next_loc, next_time):
                     # print(next_time)
                     return True
 
-def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristics, time_start, constraints = [], status = "taxiing"):
+def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristics, time_start, constraints = [],
+                              lastdifferentnode = None):
     # def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     """
     Single agent A* search. Time start can only be the time that an agent is at a node.
@@ -144,14 +145,20 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
 
             # Ensure aircraft cannot reverse direction. The while loop finds the last different node if the agent
             # has been waiting.
+
+            ### Legacy (need to change prioritized/cbs as well) ###
             if curr['parent']:
-                lastDifferentNode = curr['parent']
-                while lastDifferentNode['parent'] and lastDifferentNode['loc'] == curr['loc']:
-                    lastDifferentNode = lastDifferentNode['parent']
+                lastDifferentNode1 = curr['parent']
+                while lastDifferentNode1['parent'] and lastDifferentNode1['loc'] == curr['loc']:
+                    lastDifferentNode1 = lastDifferentNode1['parent']
 
                 # If child location reverses the aircraft do not consider that child node.
-                if child['loc'] == lastDifferentNode['loc']:
+                if child['loc'] == lastDifferentNode1['loc']:
                     continue
+
+            ### New ###
+            if child['loc'] == lastdifferentnode:
+                continue
 
 
             if (child['loc'], child['timestep']) in closed_list:

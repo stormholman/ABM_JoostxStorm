@@ -36,6 +36,7 @@ class Aircraft(object):
         self.total_path = [] # path to goal including current node
         self.path_to_goal = [] # planned path left from current location
         self.from_to = [0,0]
+        self.lastdifferentnode = None
         self.constraints = []
 
         #State related
@@ -111,6 +112,7 @@ class Aircraft(object):
         self.position = (posx, posy)  
         self.get_heading(xy_from, xy_to)
 
+        # Create field of view
         if self.heading == 0:
             self.fieldofview = [(self.position[0] - 1.5, self.position[1] + 1.5), (self.position[0] + 1.5, self.position[1] + 1.5)]
         if self.heading == 90:
@@ -120,6 +122,9 @@ class Aircraft(object):
         if self.heading == 270:
             self.fieldofview = [(self.position[0] + 1.5, self.position[1] - 1.5), (self.position[0] + 1.5, self.position[1] + 1.5)]
 
+        # Remember last node before present node. Used to restrict aircraft from turning around.
+        if from_node != to_node:
+            self.lastdifferentnode = from_node
 
         #Check if goal is reached or if to_node is reached
         if self.position == xy_to and self.path_to_goal[0][1] == t+dt: #If with this move its current to node is reached
@@ -167,7 +172,7 @@ class Aircraft(object):
                 self.path_to_goal = path[1:]
                 next_node_id = self.path_to_goal[0][0] #next node is first node in path_to_goal
                 self.from_to = [path[0][0], next_node_id]
-                print("Path AC", self.id, ":", path)
+                #print("Path AC", self.id, ":", path)
             else:
                 raise Exception("No solution found for", self.id)
             
