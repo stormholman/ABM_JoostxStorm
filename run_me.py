@@ -340,18 +340,19 @@ while running:
     #     aircraft_lst.append(ac)
     #     aircraftplanner()
     #     numberOfAircraft += 1
-    for ac in aircraft_lst:
+
+
+    for ac in aircraft_lst: # implement time for boarding
         if ac.status == "at_gate":
-            ac.status = "onboarding {}".format(t)
+            ac.status = "boarding {}".format(t)
+    for ac in aircraft_lst:
+        if ac.status == "boarding {}".format(t-boarding_time):
+            ac.status = "boarding completed"
 
     for ac in aircraft_lst:
-        if ac.status == "onboarding {}".format(t-boarding_time):
-            ac.status = "at_gate"
-
-    for ac in aircraft_lst:
-        if ac.status == "at_gate":
-            ac.status = "taxiing" # Waiting is not implemented
-            ac.departtime = t     # Waiting is not implemented
+        if ac.status == "boarding completed":
+            ac.status = "taxiing"
+            ac.departtime = t
             availableGates.append(ac.gate)
             aircraftplanner()
 
