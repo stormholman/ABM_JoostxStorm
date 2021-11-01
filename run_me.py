@@ -212,6 +212,7 @@ numberOfAircraft = 0
 availableGates = [98, 36, 35, 34, 97]
 occupiedGates = []
 seedtype = 0
+boarding_time = 2
 
 print("Simulation Started")
 while running:
@@ -339,6 +340,14 @@ while running:
     #     aircraft_lst.append(ac)
     #     aircraftplanner()
     #     numberOfAircraft += 1
+    for ac in aircraft_lst:
+        if ac.status == "at_gate":
+            ac.status = "onboarding {}".format(t)
+
+    for ac in aircraft_lst:
+        if ac.status == "onboarding {}".format(t-boarding_time):
+            ac.status = "at_gate"
+
     for ac in aircraft_lst:
         if ac.status == "at_gate":
             ac.status = "taxiing" # Waiting is not implemented
