@@ -240,64 +240,6 @@ while running:
         escape_pressed = map_running(map_properties, current_states, t)
         timer.sleep(visualization_speed)
 
-    # if (t % 2 == 0):
-    #     ac = Aircraft(numberOfAircraft, 'A', 37, 36, t, nodes_dict)
-    #     numberOfAircraft += 1
-    #     aircraft_lst.append(ac)
-    #     aircraftplanner()
-
-    # if t == 1:
-    #     # ac = Aircraft(0, 'A', 37,36,t, nodes_dict) #As an example we will create one aicraft arriving at node 37 with the goal of reaching node 36
-    #     ac1 = Aircraft(0, 'A', 97, 37,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-    #     ac2 = Aircraft(1, 'A', 37, 97,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-    #     ac3 = Aircraft(2, 'A', 35, 38, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-    #     # ac4 = Aircraft(3, 'D', 39, 36, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-    #     # aircraft_lst.append(ac)
-    #     aircraft_lst.append(ac1)
-    #     aircraft_lst.append(ac2)
-    #     aircraft_lst.append(ac3)
-    #     # aircraft_lst.append(ac4)
-    #     aircraftplanner()
-    #
-    # if t == 3:
-    #     ac = Aircraft(3, 'A', 38, 35,t, nodes_dict)
-    #     aircraft_lst.append(ac)
-    #     aircraftplanner()
-
-    # if t == 5:
-    #     ac = Aircraft(2, 'A', 37,36,t, nodes_dict)
-    #     aircraft_lst.append(ac)
-    #     aircraftplanner()
-
-
-    # if t == 10:
-    #     for ac in aircraft_lst:
-    #         if ac.id == 0:
-    #             ac.position = nodes_dict[ac.start]["xy_pos"]
-    #             aircraftplanner()
-    #
-
-
-    # if t == 5:
-    #     ac3 = Aircraft(1, 'A', 36,40,t, nodes_dict)
-    #     aircraft_lst.append(ac3)
-    #     aircraftplanner()
-
-    # if t == 5:
-    #     for ac in aircraft_lst:
-    #         if ac.id == 1:
-    #             ac.start = ac.from_to[0]
-    #             ac.goal = 25
-    #
-    #             aircraftplanner()
-    #
-    #     aircraftplanner()
-
-    # if t == 10:
-    #     ac4 = Aircraft(4, 'A', 37,36,t, nodes_dict)
-    #     aircraft_lst.append(ac4)
-    #     aircraftplanner()
-    #
     seedtype += 2
     if (t % 2 == 0): # use this
         if len(availableGates) > 0:
