@@ -54,42 +54,20 @@ def build_constraint_table(constraints, agent):
         if constraint['agent'] == agent:
                 constraint_table.append((constraint['loc'], constraint['timestep']))
     return constraint_table
-#
-# def is_constrained(curr_loc, next_loc, next_time, constraint_table):
-#     for node in constraint_table:
-#         if isinstance(node[0], list):
-#             print(node)
-#             if node[0][0] == curr_loc and node[0][1] == next_loc and node[1] == next_time:
-#                 # print((next_loc, next_time))
-#                 # print('table', constraint_table)
-#                 # print('edge')
-#                 return True
-#         elif node == (next_loc, next_time): # vertex
-#             # print(([curr_loc, next_loc], next_time))
-#             # print('table', constraint_table)
-#             # print('vertex')
-#             return True
-#         else:
-#             return False
+
 
 def is_constrained(constraints, agent, curr_loc, next_loc, next_time):
     for constraint in constraints:
-        # print(agent)
-        # print(constraint)
+
         if constraint['agent'] == agent:
 
-            # print(constraint['loc'])
-            # print(curr_loc)
-            # print(next_loc)
             if isinstance(constraint['loc'], list):
                 if constraint['loc'][0] == curr_loc and constraint['loc'][1] == next_loc and constraint['timestep'] == next_time:
                     return True
             elif constraint['loc'] == next_loc:
-                # print(constraint['loc'])
-                # print(next_loc)
+
                 if constraint['timestep'] == next_time:
-                    # print(constraint['timestep'])
-                    # print(next_time)
+
                     return True
 
 def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristics, time_start, constraints = [],
@@ -115,9 +93,6 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
     open_list = []
     closed_list = dict()
     earliest_goal_timestep = time_start
-    print(from_node_id)
-    print(goal_node_id)
-    # print(heuristics)
     h_value = heuristics[from_node_id][goal_node_id]
     root = {'loc': from_node_id, 'g_val': 0, 'h_val': h_value, 'parent': None, 'timestep': time_start}
     push_node(open_list, root)

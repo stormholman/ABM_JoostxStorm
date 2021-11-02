@@ -240,64 +240,6 @@ while running:
         escape_pressed = map_running(map_properties, current_states, t)
         timer.sleep(visualization_speed)
 
-    # if (t % 2 == 0):
-    #     ac = Aircraft(numberOfAircraft, 'A', 37, 36, t, nodes_dict)
-    #     numberOfAircraft += 1
-    #     aircraft_lst.append(ac)
-    #     aircraftplanner()
-
-    # if t == 1:
-    #     # ac = Aircraft(0, 'A', 37,36,t, nodes_dict) #As an example we will create one aicraft arriving at node 37 with the goal of reaching node 36
-    #     ac1 = Aircraft(0, 'A', 97, 37,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-    #     ac2 = Aircraft(1, 'A', 37, 97,t, nodes_dict)#As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-    #     ac3 = Aircraft(2, 'A', 35, 38, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-    #     # ac4 = Aircraft(3, 'D', 39, 36, t, nodes_dict)  # As an example we will create one aicraft arriving at node 36 with the goal of reaching node 37
-    #     # aircraft_lst.append(ac)
-    #     aircraft_lst.append(ac1)
-    #     aircraft_lst.append(ac2)
-    #     aircraft_lst.append(ac3)
-    #     # aircraft_lst.append(ac4)
-    #     aircraftplanner()
-    #
-    # if t == 3:
-    #     ac = Aircraft(3, 'A', 38, 35,t, nodes_dict)
-    #     aircraft_lst.append(ac)
-    #     aircraftplanner()
-
-    # if t == 5:
-    #     ac = Aircraft(2, 'A', 37,36,t, nodes_dict)
-    #     aircraft_lst.append(ac)
-    #     aircraftplanner()
-
-
-    # if t == 10:
-    #     for ac in aircraft_lst:
-    #         if ac.id == 0:
-    #             ac.position = nodes_dict[ac.start]["xy_pos"]
-    #             aircraftplanner()
-    #
-
-
-    # if t == 5:
-    #     ac3 = Aircraft(1, 'A', 36,40,t, nodes_dict)
-    #     aircraft_lst.append(ac3)
-    #     aircraftplanner()
-
-    # if t == 5:
-    #     for ac in aircraft_lst:
-    #         if ac.id == 1:
-    #             ac.start = ac.from_to[0]
-    #             ac.goal = 25
-    #
-    #             aircraftplanner()
-    #
-    #     aircraftplanner()
-
-    # if t == 10:
-    #     ac4 = Aircraft(4, 'A', 37,36,t, nodes_dict)
-    #     aircraft_lst.append(ac4)
-    #     aircraftplanner()
-    #
     seedtype += 2
     if (t % 2 == 0): # use this
         if len(availableGates) > 0:
@@ -312,73 +254,30 @@ while running:
             aircraftplanner()
             numberOfAircraft += 1
 
-    # if t == 3:
-    #     entry = 35
-    #     goal = 2
-    #
-    #     ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict)
-    #     aircraft_lst.append(ac)
-    #     aircraftplanner()
-    #     numberOfAircraft += 1
-
-    # for ac in aircraft_lst:
+    # for ac in aircraft_lst: # implement time for boarding
     #     if ac.status == "at_gate":
-    #         if t - ac.path_to_goal[0][1] == ac.waittime: # if waittime reached: Plan route to leave airport
-    #             availableGates.append(ac.goal)
-    #             occupiedGates.remove(ac.goal)
-    #             ac.status = "taxiing"
-    #             ac.type = 'D'
-    #             ac.departtime = t
-    #             ac.start = ac.gate
-    #             ac.goal = random.choice([1,2])
-    #             aircraftplanner()
-
-    # if (t % 1 == 0 or t % 1 == 5) and random.random() < 0.5:
-    #     entry = random.choice(availableGates)
-    #     goal = 2
-    #     ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict)
-    #     aircraft_lst.append(ac)
-    #     aircraftplanner()
-    #     numberOfAircraft += 1
-
-
-    for ac in aircraft_lst: # implement time for boarding
-        if ac.status == "at_gate":
-            ac.status = "boarding {}".format(t)
-    for ac in aircraft_lst:
-        if ac.status == "boarding {}".format(t-boarding_time):
-            ac.status = "boarding completed"
-
-    for ac in aircraft_lst:
-        if ac.status == "boarding completed":
-            ac.status = "taxiing"
-            ac.departtime = t
-            availableGates.append(ac.gate)
-            aircraftplanner()
+    #         ac.status = "boarding {}".format(t)
+    # for ac in aircraft_lst:
+    #     if ac.status == "boarding {}".format(t-boarding_time):
+    #         ac.status = "boarding completed"
+    #
+    # for ac in aircraft_lst:
+    #     if ac.status == "boarding completed":
+    #         ac.status = "taxiing"
+    #         ac.departtime = t
+    #         availableGates.append(ac.gate)
+    #         aircraftplanner()
 
     #Move the aircraft that are taxiing
     for ac in aircraft_lst:
-    #     if ac.status == "at_gate":
-    #         if t - ac.gate[1] >= ac.waittime:
-    #             ac.status = "taxiing"
-    #             ac.gate = None
-    #             ac.type = 'D'
-    #             ac.goal = random.choice([1, 2])
-    #             aircraftplanner()
+        if ac.status == "at_gate":
+            if t - ac.gatearrival >= ac.waittime:
+                ac.departtime = round(t * 2) / 2
+                ac.status = "taxiing"
+                aircraftplanner()
+                print(ac.path_to_goal)
         if ac.status == "taxiing" or ac.status == "at_gate":
             ac.move(dt, t)
-
-        # if ac.status == "at_gate":
-        #     if t == ac.path_to_goal[0][1] + ac.waittime: # if waittime reached: Plan route to leave airport
-        #         availableGates.append(ac.goal)
-        #         print(ac.goal, 'available')
-        #         occupiedGates.remove(ac.goal)
-        #         ac.type = 'D'
-        #         ac.departtime = t
-        #         ac.start = ac.path_to_goal[0][0]
-        #         ac.goal = 2
-        #         ac.status = "taxiing"
-        #         aircraftplanner()
 
     t = t + dt
           

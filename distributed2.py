@@ -8,8 +8,10 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
     constraints = []
     for ac1 in aircraft_lst:
         observations = []
-        if ac1.spawntime == t or ac1.departtime == t:
+        if ac1.spawntime == t:
             ac1.position = nodes_dict[ac1.start]["xy_pos"]
+            ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)
+        if ac1.departtime == t:
             ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)
         # Create awareness
         for ac2 in aircraft_lst:

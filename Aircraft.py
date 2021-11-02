@@ -126,7 +126,7 @@ class Aircraft(object):
         #Check if goal is reached or if to_node is reached
         if self.position == xy_to and self.path_to_goal[0][1] == t+dt: #If with this move its current to node is reached
             if self.position == self.nodes_dict[self.goal]["xy_pos"]: #if the final goal is reached
-                if self.type == "A":
+                if self.type == "A" and self.status != "at_gate":
                     self.status = "at_gate"
                     self.gatearrival = t
                     self.from_to[0] = self.from_to[1]
@@ -140,7 +140,6 @@ class Aircraft(object):
                     # # remove node 44 to prevent "clogged taxiways" (this is the easy way out)
                     # self.nodes_dict[4]['neighbors'] = {43.0, 4.0, 95.0}
                     # self.nodes_dict[5]['neighbors'] = {96.0, 5.0, 45.0}
-
 
                 elif self.type == "D":
                     self.status = "departed"
