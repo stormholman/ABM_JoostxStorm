@@ -212,7 +212,7 @@ numberOfAircraft = 0
 availableGates = [98, 36, 35, 34, 97]
 occupiedGates = []
 seedtype = 0
-boarding_time = 2
+boarding_time = 0
 
 print("Simulation Started")
 while running:
@@ -254,36 +254,6 @@ while running:
             aircraftplanner()
             numberOfAircraft += 1
 
-    # if t == 3:
-    #     entry = 35
-    #     goal = 2
-    #
-    #     ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict)
-    #     aircraft_lst.append(ac)
-    #     aircraftplanner()
-    #     numberOfAircraft += 1
-
-    # for ac in aircraft_lst:
-    #     if ac.status == "at_gate":
-    #         if t - ac.path_to_goal[0][1] == ac.waittime: # if waittime reached: Plan route to leave airport
-    #             availableGates.append(ac.goal)
-    #             occupiedGates.remove(ac.goal)
-    #             ac.status = "taxiing"
-    #             ac.type = 'D'
-    #             ac.departtime = t
-    #             ac.start = ac.gate
-    #             ac.goal = random.choice([1,2])
-    #             aircraftplanner()
-
-    # if (t % 1 == 0 or t % 1 == 5) and random.random() < 0.5:
-    #     entry = random.choice(availableGates)
-    #     goal = 2
-    #     ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict)
-    #     aircraft_lst.append(ac)
-    #     aircraftplanner()
-    #     numberOfAircraft += 1
-
-
     for ac in aircraft_lst: # implement time for boarding
         if ac.status == "at_gate":
             ac.status = "boarding {}".format(t)
@@ -300,27 +270,10 @@ while running:
 
     #Move the aircraft that are taxiing
     for ac in aircraft_lst:
-    #     if ac.status == "at_gate":
-    #         if t - ac.gate[1] >= ac.waittime:
-    #             ac.status = "taxiing"
-    #             ac.gate = None
-    #             ac.type = 'D'
-    #             ac.goal = random.choice([1, 2])
-    #             aircraftplanner()
+
         if ac.status == "taxiing" or ac.status == "at_gate":
             ac.move(dt, t)
 
-        # if ac.status == "at_gate":
-        #     if t == ac.path_to_goal[0][1] + ac.waittime: # if waittime reached: Plan route to leave airport
-        #         availableGates.append(ac.goal)
-        #         print(ac.goal, 'available')
-        #         occupiedGates.remove(ac.goal)
-        #         ac.type = 'D'
-        #         ac.departtime = t
-        #         ac.start = ac.path_to_goal[0][0]
-        #         ac.goal = 2
-        #         ac.status = "taxiing"
-        #         aircraftplanner()
 
     t = t + dt
           
