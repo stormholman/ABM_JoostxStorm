@@ -282,11 +282,9 @@ def map_running(map_properties, current_states, t):  # function to update the ma
 
     if disp_observations:
         for aircraft in current_states.keys():
-            obs_string = ""
             if current_states[aircraft]["observations"]:
-                obs_string = str(current_states[aircraft]["observations"][0].id)
-                plot_text(scr, obs_string, red, 10, reso, current_states[aircraft]["xy_pos"][0] + 0.1,
-                          current_states[aircraft]["xy_pos"][1] + 0.1, min_x, max_y, x_range, y_range, 0,
+                plot_text(scr, str(current_states[aircraft]["observations"]), black, 14, reso, current_states[aircraft]["xy_pos"][0],
+                          current_states[aircraft]["xy_pos"][1] -0.55, min_x, max_y, x_range, y_range, 0,
                           25)
 
     collision=False

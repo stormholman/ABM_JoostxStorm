@@ -181,7 +181,6 @@ def aircraftplanner():
         run_CBS(aircraft_lst, nodes_dict, edges_dict, heuristics, t)
     elif planner == "Distributed":
         run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t, traffic_agents)
-
     else:
         raise Exception("Planner:", planner, "is not defined.")
 
@@ -232,13 +231,20 @@ while running:
     #Visualization: Update map if visualization is true
     if visualization:
         current_states = {} #Collect current states of all aircraft
+
         for ac in aircraft_lst:
+            observations_list = []
+            for observation in ac.observations:
+                if observation.status != "departed":
+                    if observation.id not in observations_list:
+                        observations_list.append(observation.id)
+
             if ac.status != "departed":
                 current_states[ac.id] = {"ac_id": ac.id,
                                          "xy_pos": ac.position,
                                          "heading": ac.heading,
                                          "fieldofview": ac.fieldofview,
-                                         "observations": ac.observations}
+                                         "observations": observations_list}
         escape_pressed = map_running(map_properties, current_states, t)
         timer.sleep(visualization_speed)
 
@@ -276,7 +282,6 @@ while running:
 
     #Move the aircraft that are taxiing
     for ac in aircraft_lst:
-
         if ac.status == "taxiing" or ac.status == "at_gate":
             ac.move(dt, t)
 

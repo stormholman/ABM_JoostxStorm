@@ -7,6 +7,8 @@ from single_agent_planner import simple_single_agent_astar
 def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t, traffic_agents):
     constraints = []
     for ac1 in aircraft_lst:
+        ac.observations = []
+
         if ac1.spawntime == t:
             ac1.position = nodes_dict[ac1.start]["xy_pos"]
             ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)
@@ -126,10 +128,6 @@ def determine_right_of_way(ac1, ac2, conflictnode):
     node_ac2 = [node for node in ac2.path_to_goal if node[0] == conflictnode['id']][0]
     index1 = ac1.path_to_goal.index(node_ac1)
     index2 = ac2.path_to_goal.index(node_ac2)
-
-    print('1',index1)
-    print('2',index2)
-
 
     if node_ac1[0] == 11 or node_ac1[0] == 12:  # give priority to aircraft leaving runways
         if ac1.id < ac2.id:

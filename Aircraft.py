@@ -43,7 +43,6 @@ class Aircraft(object):
         self.heading = 0
         self.position = (0,0) #xy position on map
         self.fieldofview = None
-
         self.observations = []
 
 
