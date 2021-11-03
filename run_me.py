@@ -172,7 +172,7 @@ def create_graph(nodes_dict, edges_dict, plot_graph = True):
 def aircraftplanner():
     for ac in aircraft_lst:
         if ac.from_to != [0, 0]:
-            ac.start = ac.from_to[0]
+            ac.start = ac.from_to[0] # Review
     if planner == "Independent":
         run_independent_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t)
     elif planner == "Prioritized":
@@ -212,7 +212,8 @@ numberOfAircraft = 0
 availableGates = [98, 36, 35, 34, 97]
 occupiedGates = []
 seedtype = 0
-boarding_time = 0
+boarding_time = 3
+gatechoice = 0
 
 print("Simulation Started")
 while running:
@@ -236,18 +237,23 @@ while running:
                 current_states[ac.id] = {"ac_id": ac.id,
                                          "xy_pos": ac.position,
                                          "heading": ac.heading,
-                                         "fieldofview": ac.fieldofview}
+                                         "fieldofview": ac.fieldofview,
+                                         "observations": ac.observations}
         escape_pressed = map_running(map_properties, current_states, t)
         timer.sleep(visualization_speed)
 
     seedtype += 2
     if (t % 2 == 0): # use this
         if len(availableGates) > 0:
+            gatechoice += 1
+            if gatechoice == 5:
+                gatechoice = 0
+
             random.seed(seedtype)
             entry = random.choice([37, 38])
-            goal = random.choice(availableGates)
-            availableGates.remove(goal)
-            occupiedGates.append(goal)
+            goal = availableGates[gatechoice]
+            #availableGates.remove(goal)
+            #occupiedGates.append(goal)
 
             ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict)
             aircraft_lst.append(ac)

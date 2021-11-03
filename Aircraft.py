@@ -134,8 +134,8 @@ class Aircraft(object):
                     self.type = "D"
 
                     # remove node 56 as a route option. This is to prevent congestion at runway exits.
-                    self.nodes_dict[11]['neighbors'] = {101.0, 11.0, 55.0, 62.0}
-                    self.nodes_dict[12]['neighbors'] = {102.0, 12.0, 57.0, 63.0}
+                    self.nodes_dict[11]['neighbors'] = {11.0, 55.0, 62.0}
+                    self.nodes_dict[12]['neighbors'] = {12.0, 57.0, 63.0}
 
                     # # remove node 44 to prevent "clogged taxiways" (this is the easy way out)
                     # self.nodes_dict[4]['neighbors'] = {43.0, 4.0, 95.0}

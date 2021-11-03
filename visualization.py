@@ -14,6 +14,7 @@ import time as timer
 #%% Initialize values
 #User inputs (may be changed)
 disp_aircaft_id = True  # display aircraft id number
+disp_observations = True
 disp_waypoint_id = True  # display waypoint id number
 disp_radar_aircraft = False  # display which other aircraft an aircaft sees
 disp_time = True  # display current time
@@ -278,6 +279,15 @@ def map_running(map_properties, current_states, t):  # function to update the ma
             if current_states[aircraft]["fieldofview"]:
                 plot_line(scr, red, reso, 2, current_states[aircraft]["xy_pos"],current_states[aircraft]["fieldofview"][0], min_x, max_y, x_range, y_range)
                 plot_line(scr, red, reso, 2, current_states[aircraft]["xy_pos"],current_states[aircraft]["fieldofview"][1], min_x, max_y, x_range, y_range)
+
+    if disp_observations:
+        for aircraft in current_states.keys():
+            obs_string = ""
+            if current_states[aircraft]["observations"]:
+                obs_string = str(current_states[aircraft]["observations"][0].id)
+                plot_text(scr, obs_string, red, 10, reso, current_states[aircraft]["xy_pos"][0] + 0.1,
+                          current_states[aircraft]["xy_pos"][1] + 0.1, min_x, max_y, x_range, y_range, 0,
+                          25)
 
     collision=False
     for ac1 in current_states:
