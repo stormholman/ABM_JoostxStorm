@@ -114,20 +114,11 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                             print("Neither", ac1.id, "nor", ac2.id,  "can detour for conflict at", nextlinkage)
                     else:
                         winner, loser = determine_right_of_way(ac1, observation, nextlinkage)
-                    # print(loser.id, 'giving way')
+                    constraints.append({'agent': loser.id, 'loc': loser.from_to[0], 'timestep': t + 0.5})
                     constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1.5})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2.5})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 3}) # discuss
 
-                    # print("added constraint:", {'agent': winner.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
-                    # print("added constraint:", {'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
-                    # print(constraints)
 
                     run_astar(winner, nodes_dict, winner.from_to[0], winner.goal, heuristics, t, constraints, winner.lastdifferentnode)
-
                     run_astar(loser, nodes_dict, loser.from_to[0], loser.goal, heuristics, t, constraints, loser.lastdifferentnode)
 
                     nextintersection = find_next_intersection(ac1)
@@ -183,27 +174,19 @@ def run_astar(ac, nodes_dict, from_to, goal, heuristics, t, constraints, lastdif
         ac.path_to_goal = path[1:]
         next_node_id = ac.path_to_goal[0][0]  # next node is first node in path_to_goal
         ac.from_to = [path[0][0], next_node_id]
-        #print("New path path for AC", ac.id, ":", path)
 
     return success
 
 def find_next_intersection(ac):
-    # print(ac.id)
     for node in ac.path_to_goal:
         if ac.nodes_dict[node[0]]['type'] == "intersection":
-            # print(node[0])
-            # print(ac.nodes_dict[node[0]])
             if ac.nodes_dict[node[0]]['id'] == node[0]:
                 return ac.nodes_dict[node[0]]
 
 def find_next_linkage(ac):
-    # print(ac.id)
     for node in ac.path_to_goal:
         if ac.nodes_dict[node[0]]['type'] == "between":
-            # print(node[0])
-            # print(ac.nodes_dict[node[0]])
             if ac.nodes_dict[node[0]]['id'] == node[0]:
-
                 return ac.nodes_dict[node[0]]
 
 def resolveconflicts():
