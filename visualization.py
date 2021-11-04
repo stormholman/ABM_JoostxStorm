@@ -271,7 +271,7 @@ def map_running(map_properties, current_states, t):  # function to update the ma
 
     if disp_aircaft_id:  # if the aircraft id has to be displayed
         for aircraft in current_states.keys():
-            id_string = 'ID: ' + str(current_states[aircraft]["ac_id"])  # create string with ID
+            id_string = 'ID: ' + str(current_states[aircraft]["ac_id"]) + " " + str(current_states[aircraft]["weight_class"][0])  # create string with ID
             col = red
             plot_text(scr, id_string, col, 14, reso, current_states[aircraft]["xy_pos"][0], current_states[aircraft]["xy_pos"][1], min_x, max_y, x_range, y_range, 0,
                       25)

@@ -211,11 +211,14 @@ numberOfAircraft = 0
 availableGates = [98, 36, 35, 34, 97]
 occupiedGates = []
 seedtype = 0
+gatechoice = 0
+
 # boarding_time = 3
 gatechoice = 0
 
 print("Simulation Started")
 while running:
+
     t= round(t,2)
 
     if planner == "Distributed" and t % 0.5 == 0:
@@ -226,47 +229,54 @@ while running:
         running = False
         pg.quit()
         print("Simulation Stopped")
-        break 
+        break
+
+    activeAircraft = 0
+    for ac in aircraft_lst:
+        if ac.status != "departed":
+            activeAircraft += 1
+
     
     #Visualization: Update map if visualization is true
     if visualization:
-
-
         current_states = {} #Collect current states of all aircraft
-
         for ac in aircraft_lst:
             observations_list = []
             for observation in ac.observations:
                 if observation.status != "departed":
-                    if observation.id not in observations_list:
-                        observations_list.append(observation.id)
+                    observations_list.append(observation.id)
 
             if ac.status != "departed":
                 current_states[ac.id] = {"ac_id": ac.id,
                                          "xy_pos": ac.position,
                                          "heading": ac.heading,
                                          "fieldofview": ac.fieldofview,
-                                         "observations": observations_list}
+                                         "observations": observations_list,
+                                         "weight_class": ac.weight_class}
+
         escape_pressed = map_running(map_properties, current_states, t)
         timer.sleep(visualization_speed)
 
     seedtype += 2
-    if (t % 2 == 0):  # use this
-        if len(availableGates) > 0:
+    if (t % 3 == 0):
+        #if len(availableGates) > 0:
+        if activeAircraft < 15:
             random.seed(seedtype)
-
-            weight_classes = ["heavy", "small"]  # List
+            weight_classes = ["Heavy", "Small"]  # List
             weight_class = random.choice(weight_classes)  # Chooses from list
-            if weight_class == "heavy":
+            if weight_class == "Heavy":
                 entry = 37
-            elif weight_class == "small":
+            elif weight_class == "Small":
                 entry = 38
-            else:
-                print("no weightclass")
+
+            if gatechoice == 5:
+                gatechoice = 0
+
             # print(weight_class)
-            goal = random.choice(availableGates)
-            availableGates.remove(goal)
-            occupiedGates.append(goal)
+            goal = availableGates[gatechoice]
+            gatechoice += 1
+            # availableGates.remove(goal)
+            # occupiedGates.append(goal)
 
             ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict, weight_class)
             aircraft_lst.append(ac)

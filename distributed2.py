@@ -6,6 +6,7 @@ from single_agent_planner import simple_single_agent_astar
 
 def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t, traffic_agents):
     constraints = []
+
     for ac1 in aircraft_lst:
         ac1.observations = []
         if ac1.spawntime == t:
@@ -18,22 +19,29 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
         for ac2 in aircraft_lst:
             if ac1 != ac2:
                 if ac1.position and ac1.fieldofview and ac2.position and ac2.fieldofview: # discuss
-                    if ac1.heading == 0:
-                        if 0 < ac2.position[0] - ac1.position[0] <= ac1.fieldofview[0][1] - ac1.position[1] + 0.1:
-                            if abs(ac2.position[1] - ac1.position[1] / abs(ac2.position[0] - ac1.position[0])) <= (1.5/1.5):
-                                ac1.observations.append(ac2)
-                    if ac1.heading == 270:
-                        if 0 < ac2.position[0] - ac1.position[0] <= ac1.fieldofview[0][0] - ac1.position[0] + 0.1:
-                            if abs(ac2.position[1] - ac1.position[1]) / abs(ac2.position[0] - ac1.position[0]) <= (1.5/1.5):
-                                ac1.observations.append(ac2)
-                    if ac1.heading == 180:
-                        if 0 < ac1.position[1] - ac2.position[1] <= ac1.position[1] - ac1.fieldofview[0][1] + 0.1:
-                            if abs(ac2.position[0] - ac1.position[0] / abs(ac1.position[1] - ac2.position[1])) <= (1.5/1.5):
-                                ac1.observations.append(ac2)
-                    if ac1.heading == 90:
-                        if 0 < ac1.position[0] - ac2.position[0] <= ac1.position[0] - ac1.fieldofview[0][0] + 0.1:
-                            if abs(ac2.position[1] - ac1.position[1]) / abs(ac1.position[0] - ac2.position[0]) <= (1.5/1.5):
-                                ac1.observations.append(ac2)
+
+                    if in_view(ac1.position, ac1.fieldofview[0], ac1.fieldofview[1], ac2.position):
+                        ac1.observations.append(ac2)
+
+                    # if ac1.heading == 0:
+                    #     if 0 < ac2.position[0] - ac1.position[0] <= ac1.fieldofview[0][1] - ac1.position[1] + 0.1:
+                    #         if abs(ac2.position[1] - ac1.position[1] / abs(ac2.position[0] - ac1.position[0])) <= (1.5/1.5):
+                    #             ac1.observations.append(ac2)
+                    # if ac1.heading == 270:
+                    #     if 0 < ac2.position[0] - ac1.position[0] <= ac1.fieldofview[0][0] - ac1.position[0] + 0.1:
+                    #         if abs(ac2.position[1] - ac1.position[1]) / abs(ac2.position[0] - ac1.position[0]) <= (1.5/1.5):
+                    #             ac1.observations.append(ac2)
+                    # if ac1.heading == 180:
+                    #     if 0 < ac1.position[1] - ac2.position[1] <= ac1.fieldofview[0][1] - ac1.position[1] + 0.1:
+                    #         if abs(ac2.position[0] - ac1.position[0] / abs(ac1.position[1] - ac2.position[1])) <= (1.5/1.5):
+                    #             ac1.observations.append(ac2)
+                    #             if ac1.id == 8:
+                    #                 print(ac1.id, ac1.position)
+                    #                 print(ac2.id, ac2.position)
+                    # if ac1.heading == 90:
+                    #     if 0 < ac1.position[0] - ac2.position[0] <= ac1.position[0] - ac1.fieldofview[0][0] + 0.1:
+                    #         if abs(ac2.position[1] - ac1.position[1]) / abs(ac1.position[0] - ac2.position[0]) <= (1.5/1.5):
+                    #             ac1.observations.append(ac2)
 
                 if ac1.position == (1.5, 5) or ac1.position == (1.5, 4): # don't let aircraft depart at the same time from rw 1 or 2
                     if ac2.position == (1.5, 5) or ac2.position == (1.5, 4):
@@ -68,9 +76,27 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
         nextlinkage = find_next_linkage(ac1)
 
         for observation in ac1.observations:
-            if nextintersection: # if ac1 has a next intersection
-                if nextintersection == find_next_intersection(observation):
 
+            if ac1.heading == observation.heading:
+                if ac1.from_to[1] == observation.from_to[0]:
+                    constraints.append({'agent': ac1.id, 'loc': ac1.from_to[1], 'timestep': t + 0.5})
+                    run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                              ac1.lastdifferentnode)
+
+                    nextintersection = find_next_intersection(ac1)
+                    nextlinkage = find_next_linkage(ac1)
+
+            if nextintersection: # if ac1 has a next intersection
+                if observation.from_to[0] in {97, 34, 35, 36, 98} and ac1.goal == observation.from_to:
+                    for neighbor in ac1.nodes_dict[ac1.goal]['neighbors']:
+                        constraints.append({'agent': ac1.id, 'loc': neighbor, 'timestep': t + 0.5})
+                    run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                              ac1.lastdifferentnode)
+
+                    nextintersection = find_next_intersection(ac1)
+                    nextlinkage = find_next_linkage(ac1)
+
+                elif nextintersection == find_next_intersection(observation):
                     # ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, # discuss
                     #            [{'agent': ac1.id, 'loc': nextintersection['id'], 'timestep': t + 0.5},
                     #             {'agent': ac1.id, 'loc': nextintersection['id'], 'timestep': t + 1}],
@@ -108,6 +134,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
 
             if nextlinkage: # if ac1 has a next intersection
                 if nextlinkage == find_next_linkage(observation):
+
 
                     # ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
                     #           ac1.lastdifferentnode, False)
@@ -152,10 +179,11 @@ def determine_right_of_way(ac1, ac2, conflictnode):
     # print(ac1.path_to_goal)
     # print(conflictnode)
     # print([node for node in ac1.path_to_goal if node[0] == conflictnode['id']])
-    node_ac1 = [node for node in ac1.path_to_goal if node[0] == conflictnode['id']][0]
-    node_ac2 = [node for node in ac2.path_to_goal if node[0] == conflictnode['id']][0]
-    index1 = ac1.path_to_goal.index(node_ac1)
-    index2 = ac2.path_to_goal.index(node_ac2)
+
+    node_ac1 = [node for node in ac1.total_path if node[0] == conflictnode['id']][0]
+    node_ac2 = [node for node in ac2.total_path if node[0] == conflictnode['id']][0]
+    index1 = ac1.total_path.index(node_ac1)
+    index2 = ac2.total_path.index(node_ac2)
 
     if node_ac1[0] == 11 or node_ac1[0] == 12:  # give priority to aircraft leaving runways
         if ac1.id < ac2.id:
@@ -198,16 +226,51 @@ def run_astar(ac, nodes_dict, from_to, goal, heuristics, t, constraints, lastdif
     return success
 
 def find_next_intersection(ac):
-    for node in ac.path_to_goal:
+    for node in ac.total_path:
         if ac.nodes_dict[node[0]]['type'] == "intersection":
             if ac.nodes_dict[node[0]]['id'] == node[0]:
                 return ac.nodes_dict[node[0]]
 
 def find_next_linkage(ac):
-    for node in ac.path_to_goal:
+    for node in ac.total_path:
         if ac.nodes_dict[node[0]]['type'] == "between":
             if ac.nodes_dict[node[0]]['id'] == node[0]:
                 return ac.nodes_dict[node[0]]
 
-def resolveconflicts():
-    pass
+
+# A function to check whether point P(x, y)
+# lies inside the triangle formed by
+# A(x1, y1), B(x2, y2) and C(x3, y3)
+# https://www.geeksforgeeks.org/check-whether-a-given-point-lies-inside-a-triangle-or-not/
+def in_view(c1, c2, c3, point):
+    x1, y1 = c1[0], c1[1]
+    x2, y2 = c2[0], c2[1]
+    x3, y3 = c3[0], c3[1]
+    x, y = point[0], point[1]
+
+    # A utility function to calculate area
+    # of triangle formed by (x1, y1),
+    # (x2, y2) and (x3, y3)
+    def area(x1, y1, x2, y2, x3, y3):
+
+        return abs((x1 * (y2 - y3) + x2 * (y3 - y1)
+                    + x3 * (y1 - y2)) / 2.0)
+
+    # Calculate area of triangle ABC
+    A = area(x1, y1, x2, y2, x3, y3)
+
+    # Calculate area of triangle PBC
+    A1 = area(x, y, x2, y2, x3, y3)
+
+    # Calculate area of triangle PAC
+    A2 = area(x1, y1, x, y, x3, y3)
+
+    # Calculate area of triangle PAB
+    A3 = area(x1, y1, x2, y2, x, y)
+
+    # Check if sum of A1, A2 and A3
+    # is same as A
+    if (A == A1 + A2 + A3):
+        return True
+    else:
+        return False

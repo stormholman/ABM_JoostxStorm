@@ -30,9 +30,9 @@ class Aircraft(object):
         self.gatearrival = None
         self.departtime = None
         self.weight_class = weight_class
-        if self.weight_class == "heavy":
+        if self.weight_class == "Heavy":
             self.boarding_time = 4
-        if self.weight_class == "small":
+        if self.weight_class == "Small":
             self.boarding_time = 2
 
         # Route related
@@ -139,9 +139,9 @@ class Aircraft(object):
                     self.status = "at_gate"
                     self.gatearrival = t
                     self.from_to[0] = self.from_to[1]
-                    if self.weight_class == "heavy":
+                    if self.weight_class == "Heavy":
                         self.goal = 2
-                    if self.weight_class == "small":
+                    if self.weight_class == "Small":
                         self.goal = 1
                     self.type = "D"
 
