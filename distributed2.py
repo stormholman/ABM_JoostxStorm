@@ -10,6 +10,7 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
         ac1.observations = []
 
 
+
         if ac1.spawntime == t:
             ac1.position = nodes_dict[ac1.start]["xy_pos"]
             ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)

@@ -276,6 +276,7 @@ def map_running(map_properties, current_states, t):  # function to update the ma
             plot_text(scr, id_string, col, 14, reso, current_states[aircraft]["xy_pos"][0], current_states[aircraft]["xy_pos"][1], min_x, max_y, x_range, y_range, 0,
                       25)
 
+
             if current_states[aircraft]["fieldofview"]:
                 plot_line(scr, red, reso, 2, current_states[aircraft]["xy_pos"],current_states[aircraft]["fieldofview"][0], min_x, max_y, x_range, y_range)
                 plot_line(scr, red, reso, 2, current_states[aircraft]["xy_pos"],current_states[aircraft]["fieldofview"][1], min_x, max_y, x_range, y_range)

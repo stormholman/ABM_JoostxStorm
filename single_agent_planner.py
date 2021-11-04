@@ -70,6 +70,7 @@ def is_constrained(constraints, agent, curr_loc, next_loc, next_time):
 
                     return True
 
+
 def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristics, time_start, constraints = [],
                               lastdifferentnode = None):
     # def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):

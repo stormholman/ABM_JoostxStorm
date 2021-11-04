@@ -47,6 +47,7 @@ class Aircraft(object):
 
 
 
+
     def get_heading(self, xy_start, xy_next):
         """
         Determines heading of an aircraft based on a start and end xy position.
