@@ -288,6 +288,7 @@ def map_running(map_properties, current_states, t):  # function to update the ma
                           25)
 
     collision=False
+
     for ac1 in current_states:
         for ac2 in current_states:
             if ac1 != ac2 and current_states[ac1]["xy_pos"] == current_states[ac2]["xy_pos"]:

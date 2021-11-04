@@ -230,6 +230,7 @@ while running:
     
     #Visualization: Update map if visualization is true
     if visualization:
+
         current_states = {} #Collect current states of all aircraft
 
         for ac in aircraft_lst:
