@@ -30,6 +30,39 @@ def run_CBS(aircraft_lst, nodes_dict, edges_dict, heuristics, t):
             return
 
         constraints = []
+        # for ac1 in aircraft_lst:
+        #     for ac2 in aircraft_lst:
+        #         if ac1 != ac2:
+        #             if ac1.position == (1.5, 5) or ac1.position == (
+        #             1.5, 4):  # don't let aircraft depart at the same time from rw 1 or 2
+        #                 if ac2.position == (1.5, 5) or ac2.position == (1.5, 4):
+        #                     if ac1.weight_class == "heavy" and ac2.weight_class == "small":  # smallest aircraft gives way
+        #                         constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
+        #                         constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
+        #                     elif ac1.weight_class == "small" and ac2.weight_class == "heavy":
+        #                         constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
+        #                         constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
+        #                     else:
+        #                         if ac1.id < ac2.id:  # largest id gives way
+        #                             constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
+        #                             constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
+        #                         else:
+        #                             constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
+        #                             constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
+        #                     print("constr", constraints)
+        #                     # simple_single_agent_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+        #                     #           ac1.lastdifferentnode)
+        #                     # simple_single_agent_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
+        #                     #           ac2.lastdifferentnode)
+        #
+        #             if ac1.position == (
+        #             1.5, 4):  # small ac waits 0.5 sec for vertex turbulence to disappear caused by heavy ac
+        #                 if ac2.position == (2, 5) and ac2.path_to_goal[0][0] == 95:
+        #                     constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 1})
+        #                     # simple_single_agent_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
+        #                     #           ac2.lastdifferentnode)
+        #                     print("Aircraft", ac2.id, "waits due to heavy vortex from aircraft", ac1.id)
+
         for collision in p['collisions']:
             (constraint1, constraint2) = (standard_splitting(collision))
             constraints.append(constraint1)

@@ -8,9 +8,6 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
     constraints = []
     for ac1 in aircraft_lst:
         ac1.observations = []
-
-
-
         if ac1.spawntime == t:
             ac1.position = nodes_dict[ac1.start]["xy_pos"]
             ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)
@@ -177,7 +174,7 @@ def determine_right_of_way(ac1, ac2, conflictnode):
             else:
                 return ac2, ac1
     else:
-        if index1 < index2: # largest index gives way
+        if index1 < index2: # largest index gives way (ac that has been waiting the least amount of time)
             return ac1, ac2 # winner, loser
         else:
             return ac2, ac1
