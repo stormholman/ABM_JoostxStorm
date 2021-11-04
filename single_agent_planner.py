@@ -65,9 +65,7 @@ def is_constrained(constraints, agent, curr_loc, next_loc, next_time):
                 if constraint['loc'][0] == curr_loc and constraint['loc'][1] == next_loc and constraint['timestep'] == next_time:
                     return True
             elif constraint['loc'] == next_loc:
-
                 if constraint['timestep'] == next_time:
-
                     return True
 
 
@@ -99,9 +97,11 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
     push_node(open_list, root)
     closed_list[(root['loc'], root['timestep'])] = root
     # constraint_table = build_constraint_table(constraints, agent)
-
     #print('Running astar for agent', agent, ', constraints: ', constraints)
     while len(open_list) > 0:
+
+
+
         # print(len(open_list))
         curr = pop_node(open_list)
         if curr['loc'] == goal_node_id and curr['timestep'] >= earliest_goal_timestep:
@@ -134,7 +134,6 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
 
             ### New ###
             if child['loc'] == lastdifferentnode:
-                # print("constrained prev loc", lastdifferentnode)
                 continue
 
 

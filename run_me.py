@@ -32,7 +32,7 @@ planner = "Distributed" #choose which planner to use (currently only Independent
 #Visualization (can also be changed)
 plot_graph = False    #show graph representation in NetworkX
 visualization = True        #pygame visualization
-visualization_speed = 0.05 #set at 0.1 as default
+visualization_speed = 0.01 #set at 0.1 as default
 
 #%%Function definitions
 def import_layout(nodes_file, edges_file, traffic_agents):
@@ -288,7 +288,7 @@ while running:
             ac.status = "boarding {}".format(t)
     for ac in aircraft_lst:
         if ac.status == "boarding {}".format(t-ac.boarding_time):
-            print(ac.id, ac.weight_class, ac.boarding_time)
+            #print(ac.id, ac.weight_class, ac.boarding_time)
             ac.status = "boarding completed"
 
     for ac in aircraft_lst:

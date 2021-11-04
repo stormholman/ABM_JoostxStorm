@@ -8,169 +8,164 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
     constraints = []
 
     for ac1 in aircraft_lst:
-        ac1.observations = []
-        if ac1.spawntime == t:
-            ac1.position = nodes_dict[ac1.start]["xy_pos"]
-            ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)
-        if ac1.departtime == t:
-            ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)
+        if ac1.status != "departed":
+            ac1.observations = []
+            if ac1.spawntime == t:
+                ac1.position = nodes_dict[ac1.start]["xy_pos"]
+                ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)
 
-        # Create awareness
-        for ac2 in aircraft_lst:
-            if ac1 != ac2:
-                if ac1.position and ac1.fieldofview and ac2.position and ac2.fieldofview: # discuss
+            if ac1.departtime == t:
+                ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)
 
-                    if in_view(ac1.position, ac1.fieldofview[0], ac1.fieldofview[1], ac2.position):
-                        ac1.observations.append(ac2)
+            # Create awareness
+            for ac2 in aircraft_lst:
+                if ac2.status != "departed":
+                    if ac1 != ac2:
+                        if ac1.position and ac1.fieldofview and ac2.position and ac2.fieldofview:
+                            if in_view(ac1.position, ac1.fieldofview[0], ac1.fieldofview[1], ac2.position):
+                                ac1.observations.append(ac2)
+                            elif ac2.from_to[0] in ac1.nodes_dict[ac1.from_to[0]]["neighbors"]:
+                                if ac2.from_to[0] != ac1.lastdifferentnode:
+                                    ac1.observations.append(ac2)
+                            elif ac2.from_to[0] == ac1.goal: #ac1 knows if gate is occupied
+                                ac1.observations.append(ac2)
 
-                    # if ac1.heading == 0:
-                    #     if 0 < ac2.position[0] - ac1.position[0] <= ac1.fieldofview[0][1] - ac1.position[1] + 0.1:
-                    #         if abs(ac2.position[1] - ac1.position[1] / abs(ac2.position[0] - ac1.position[0])) <= (1.5/1.5):
-                    #             ac1.observations.append(ac2)
-                    # if ac1.heading == 270:
-                    #     if 0 < ac2.position[0] - ac1.position[0] <= ac1.fieldofview[0][0] - ac1.position[0] + 0.1:
-                    #         if abs(ac2.position[1] - ac1.position[1]) / abs(ac2.position[0] - ac1.position[0]) <= (1.5/1.5):
-                    #             ac1.observations.append(ac2)
-                    # if ac1.heading == 180:
-                    #     if 0 < ac1.position[1] - ac2.position[1] <= ac1.fieldofview[0][1] - ac1.position[1] + 0.1:
-                    #         if abs(ac2.position[0] - ac1.position[0] / abs(ac1.position[1] - ac2.position[1])) <= (1.5/1.5):
-                    #             ac1.observations.append(ac2)
-                    #             if ac1.id == 8:
-                    #                 print(ac1.id, ac1.position)
-                    #                 print(ac2.id, ac2.position)
-                    # if ac1.heading == 90:
-                    #     if 0 < ac1.position[0] - ac2.position[0] <= ac1.position[0] - ac1.fieldofview[0][0] + 0.1:
-                    #         if abs(ac2.position[1] - ac1.position[1]) / abs(ac1.position[0] - ac2.position[0]) <= (1.5/1.5):
-                    #             ac1.observations.append(ac2)
+                        if ac1.position == (1.5, 5) or ac1.position == (1.5, 4): # don't let aircraft depart at the same time from rw 1 or 2
+                            if ac2.position == (1.5, 5) or ac2.position == (1.5, 4):
+                                if ac1.weight_class == "Heavy" and ac2.weight_class == "Small":  # smallest aircraft gives way
+                                    constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
+                                    constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
+                                elif ac1.weight_class == "Small" and ac2.weight_class == "Heavy":
+                                    constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
+                                    constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
+                                else:
+                                    if ac1.id < ac2.id:  # largest id gives way
+                                        constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
+                                        constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
+                                    else:
+                                        constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
+                                        constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
+                                # print("constr", constraints)
+                                run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                                          ac1.lastdifferentnode)
+                                run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
+                                          ac2.lastdifferentnode)
 
-                if ac1.position == (1.5, 5) or ac1.position == (1.5, 4): # don't let aircraft depart at the same time from rw 1 or 2
-                    if ac2.position == (1.5, 5) or ac2.position == (1.5, 4):
-                        if ac1.weight_class == "heavy" and ac2.weight_class == "small":  # smallest aircraft gives way
-                            constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
-                            constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
-                        elif ac1.weight_class == "small" and ac2.weight_class == "heavy":
-                            constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
-                            constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
-                        else:
-                            if ac1.id < ac2.id:  # largest id gives way
-                                constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
-                                constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
-                            else:
-                                constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
-                                constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
-                        # print("constr", constraints)
-                        run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
-                                  ac1.lastdifferentnode)
-                        run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
-                                  ac2.lastdifferentnode)
-
-                if ac1.position == (1.5, 4): # small ac waits 0.5 sec for vertex turbulence to disappear caused by heavy ac
-                    if ac2.position == (2, 5) and ac2.path_to_goal[0][0] == 95:
-                        constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 1})
-                        run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
-                                  ac2.lastdifferentnode)
-                        print("Aircraft", ac2.id, "waits due to heavy vortex from aircraft", ac1.id)
+                        if ac1.position == (1.5, 4): # small ac waits 0.5 sec for vertex turbulence to disappear caused by heavy ac
+                            if ac2.position == (2, 5) and ac2.path_to_goal[0][0] == 95:
+                                constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 1})
+                                run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
+                                          ac2.lastdifferentnode)
+                                #print("Aircraft", ac2.id, "waits due to heavy vortex from aircraft", ac1.id)
 
 
-        nextintersection = find_next_intersection(ac1)
-        nextlinkage = find_next_linkage(ac1)
+                nextintersection = find_next_intersection(ac1)
+                nextlinkage = find_next_linkage(ac1)
 
-        for observation in ac1.observations:
+                for observation in ac1.observations:
+                    if observation.from_to[0] == ac1.goal:
+                        for neighbor in ac1.nodes_dict[ac1.goal]["neighbors"]:
+                            for nextneighbour in ac1.nodes_dict[neighbor]["neighbors"]:
+                                constraints.append({'agent': ac1.id, 'loc': nextneighbour, 'timestep': t + 0.5})
+                            run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                                          ac1.lastdifferentnode)
 
-            if ac1.heading == observation.heading:
-                if ac1.from_to[1] == observation.from_to[0]:
-                    constraints.append({'agent': ac1.id, 'loc': ac1.from_to[1], 'timestep': t + 0.5})
-                    run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
-                              ac1.lastdifferentnode)
-
-                    nextintersection = find_next_intersection(ac1)
-                    nextlinkage = find_next_linkage(ac1)
-
-            if nextintersection: # if ac1 has a next intersection
-                if observation.from_to[0] in {97, 34, 35, 36, 98} and ac1.goal == observation.from_to:
-                    for neighbor in ac1.nodes_dict[ac1.goal]['neighbors']:
-                        constraints.append({'agent': ac1.id, 'loc': neighbor, 'timestep': t + 0.5})
-                    run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
-                              ac1.lastdifferentnode)
-
-                    nextintersection = find_next_intersection(ac1)
-                    nextlinkage = find_next_linkage(ac1)
-
-                elif nextintersection == find_next_intersection(observation):
-                    # ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, # discuss
-                    #            [{'agent': ac1.id, 'loc': nextintersection['id'], 'timestep': t + 0.5},
-                    #             {'agent': ac1.id, 'loc': nextintersection['id'], 'timestep': t + 1}],
-                    #           ac1.lastdifferentnode, False)
-                    #
-                    # ac2_can_detour = run_astar(ac2, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t,
-                    #                            [{'agent': ac2.id, 'loc': nextintersection['id'], 'timestep': t + 0.5},
-                    #                             {'agent': ac2.id, 'loc': nextintersection['id'], 'timestep': t + 1}],
-                    #                    ac1.lastdifferentnode, False)
-                    #
-                    # # check if ac2 can detour (for situations near 104/107)
-                    # if ac1_can_detour == False or ac2_can_detour == False:
-                    #     print("-------------------------------------------------------------------------------")
-                    #     if ac1_can_detour:
-                    #         ac1 = loser
-                    #         ac2 = winner
-                    #     elif ac2_can_detour:
-                    #         ac2 = loser
-                    #         ac1 = winner
-                    #     else:
-                    #         print("Neither", ac1.id, ac1.position, "nor", ac2.id, ac2.position, "can detour for conflict at", nextintersection)
-                    #
-                    # else:
-                    #
-                    winner, loser = determine_right_of_way(ac1, observation, nextintersection)
-
-                    # review ###########
-                    constraints.append({'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 0.5})
-                    constraints.append({'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 1})
-
-                    run_astar(loser, nodes_dict, loser.from_to[0], loser.goal, heuristics, t, constraints, loser.lastdifferentnode)
-
-                    nextintersection = find_next_intersection(ac1)
-                    nextlinkage = find_next_linkage(ac1)
-
-            if nextlinkage: # if ac1 has a next intersection
-                if nextlinkage == find_next_linkage(observation):
+                            nextintersection = find_next_intersection(ac1)
+                            nextlinkage = find_next_linkage(ac1)
 
 
-                    # ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
-                    #           ac1.lastdifferentnode, False)
-                    #
-                    # ac2_can_detour = run_astar(ac2, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
-                    #                    ac1.lastdifferentnode, False)
-                    #
-                    # if ac1_can_detour == False or ac2_can_detour == False:
-                    #     if ac1_can_detour:
-                    #         ac1 = loser
-                    #         ac2 = winner
-                    #     elif ac2_can_detour:
-                    #         ac2 = loser
-                    #         ac1 = winner
-                    #     else:
-                    #         print("Neither", ac1.id, "nor", ac2.id,  "can detour for conflict at", nextlinkage)
-                    # else:
-                    winner, loser = determine_right_of_way(ac1, observation, nextlinkage)
-                    # print(loser.id, 'giving way')
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1.5})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2.5})
-                    constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 3}) # discuss
+                    if ac1.heading == observation.heading:
+                        if ac1.from_to[1] == observation.from_to[0]:
+                            constraints.append({'agent': ac1.id, 'loc': ac1.from_to[1], 'timestep': t + 0.5})
+                            run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                                      ac1.lastdifferentnode)
 
-                    # print("added constraint:", {'agent': winner.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
-                    # print("added constraint:", {'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
-                    # print(constraints)
+                            nextintersection = find_next_intersection(ac1)
+                            nextlinkage = find_next_linkage(ac1)
 
-                    run_astar(winner, nodes_dict, winner.from_to[0], winner.goal, heuristics, t, constraints, winner.lastdifferentnode)
+                    if nextintersection: # if ac1 has a next intersection
+                        if observation.from_to[0] in {97, 34, 35, 36, 98} and ac1.goal == observation.from_to[1]:
+                            for neighbor in ac1.nodes_dict[ac1.goal]['neighbors']:
+                                constraints.append({'agent': ac1.id, 'loc': neighbor, 'timestep': t + 0.5})
+                            run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                                      ac1.lastdifferentnode)
 
-                    run_astar(loser, nodes_dict, loser.from_to[0], loser.goal, heuristics, t, constraints, loser.lastdifferentnode)
+                            nextintersection = find_next_intersection(ac1)
+                            nextlinkage = find_next_linkage(ac1)
 
-                    nextintersection = find_next_intersection(ac1)
-                    nextlinkage = find_next_linkage(ac1)
+                        elif nextintersection == find_next_intersection(observation):
+                            # ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, # discuss
+                            #            [{'agent': ac1.id, 'loc': nextintersection['id'], 'timestep': t + 0.5},
+                            #             {'agent': ac1.id, 'loc': nextintersection['id'], 'timestep': t + 1}],
+                            #           ac1.lastdifferentnode, False)
+                            #
+                            # ac2_can_detour = run_astar(ac2, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t,
+                            #                            [{'agent': ac2.id, 'loc': nextintersection['id'], 'timestep': t + 0.5},
+                            #                             {'agent': ac2.id, 'loc': nextintersection['id'], 'timestep': t + 1}],
+                            #                    ac1.lastdifferentnode, False)
+                            #
+                            # # check if ac2 can detour (for situations near 104/107)
+                            # if ac1_can_detour == False or ac2_can_detour == False:
+                            #     print("-------------------------------------------------------------------------------")
+                            #     if ac1_can_detour:
+                            #         ac1 = loser
+                            #         ac2 = winner
+                            #     elif ac2_can_detour:
+                            #         ac2 = loser
+                            #         ac1 = winner
+                            #     else:
+                            #         print("Neither", ac1.id, ac1.position, "nor", ac2.id, ac2.position, "can detour for conflict at", nextintersection)
+                            #
+                            # else:
+                            #
+                            winner, loser = determine_right_of_way(ac1, observation, nextintersection)
+
+                            # review ###########
+                            constraints.append({'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 0.5})
+                            constraints.append({'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 1})
+
+                            run_astar(loser, nodes_dict, loser.from_to[0], loser.goal, heuristics, t, constraints, loser.lastdifferentnode)
+
+                            nextintersection = find_next_intersection(ac1)
+                            nextlinkage = find_next_linkage(ac1)
+
+                    if nextlinkage: # if ac1 has a next intersection
+                        if nextlinkage == find_next_linkage(observation):
+
+                            # ac1_can_detour = run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                            #           ac1.lastdifferentnode, False)
+                            #
+                            # ac2_can_detour = run_astar(ac2, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                            #                    ac1.lastdifferentnode, False)
+                            #
+                            # if ac1_can_detour == False or ac2_can_detour == False:
+                            #     if ac1_can_detour:
+                            #         ac1 = loser
+                            #         ac2 = winner
+                            #     elif ac2_can_detour:
+                            #         ac2 = loser
+                            #         ac1 = winner
+                            #     else:
+                            #         print("Neither", ac1.id, "nor", ac2.id,  "can detour for conflict at", nextlinkage)
+                            # else:
+                            winner, loser = determine_right_of_way(ac1, observation, nextlinkage)
+                            # print(loser.id, 'giving way')
+                            constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
+                            constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1})
+                            constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1.5})
+                            constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2})
+                            constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2.5})
+                            constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 3}) # discuss
+
+                            # print("added constraint:", {'agent': winner.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
+                            # print("added constraint:", {'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
+                            # print(constraints)
+
+                            run_astar(winner, nodes_dict, winner.from_to[0], winner.goal, heuristics, t, constraints, winner.lastdifferentnode)
+                            run_astar(loser, nodes_dict, loser.from_to[0], loser.goal, heuristics, t, constraints, loser.lastdifferentnode)
+
+                            nextintersection = find_next_intersection(ac1)
+                            nextlinkage = find_next_linkage(ac1)
 
 
 

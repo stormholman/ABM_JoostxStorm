@@ -145,17 +145,18 @@ class Aircraft(object):
                         self.goal = 1
                     self.type = "D"
 
-                    # remove node 56 as a route option. This is to prevent congestion at runway exits.
-                    self.nodes_dict[11]['neighbors'] = {11.0, 55.0, 62.0}
-                    self.nodes_dict[12]['neighbors'] = {12.0, 57.0, 63.0}
-
+                    # # remove node 56 as a route option. This is to prevent congestion at runway exits.
+                    # self.nodes_dict[11]['neighbors'] = {11.0, 55.0, 62.0}
+                    # self.nodes_dict[12]['neighbors'] = {12.0, 57.0, 63.0}
+                    #
                     # # remove node 44 to prevent "clogged taxiways" (this is the easy way out)
-                    # self.nodes_dict[4]['neighbors'] = {43.0, 4.0, 95.0}
-                    # self.nodes_dict[5]['neighbors'] = {96.0, 5.0, 45.0}
+                    self.nodes_dict[4]['neighbors'] = {43.0, 4.0, 95.0}
+                    self.nodes_dict[5]['neighbors'] = {96.0, 5.0, 45.0}
 
                 elif self.type == "D":
                     self.status = "departed"
                     self.departtime = t
+                    self.from_to = [0, 0]
                     print('Aircraft', self.id, self.status, ". Total route: ")
                     print(self.route, print("(Length: ", len(self.route), ", Time spend: ",
                                             round(self.departtime - self.spawntime + 0.1), ")"))
@@ -184,6 +185,7 @@ class Aircraft(object):
         if self.status == "taxiing":
             start_node = self.start  # node from which planning should be done
             goal_node = self.goal  # node to which planning should be done
+            #print("running independent for agent", self.id)
             success, path = simple_single_agent_astar(self.id, nodes_dict, start_node, goal_node, heuristics, t, [])
 
             if success:
