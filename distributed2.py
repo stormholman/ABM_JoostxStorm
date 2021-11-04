@@ -53,13 +53,18 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                             else:
                                 constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
                                 constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
-                        print("constr", constraints)
+                        # print("constr", constraints)
                         run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
                                   ac1.lastdifferentnode)
                         run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
                                   ac2.lastdifferentnode)
 
-
+                if ac1.position == (1.5, 4): # small ac waits 0.5 sec for vertex turbulence to disappear caused by heavy ac
+                    if ac2.position == (2, 5) and ac2.path_to_goal[0][0] == 95:
+                        constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 1})
+                        run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
+                                  ac2.lastdifferentnode)
+                        print("Aircraft", ac2.id, "waits due to heavy vortex from aircraft", ac1.id)
 
 
         nextintersection = find_next_intersection(ac1)
