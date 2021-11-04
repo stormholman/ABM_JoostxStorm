@@ -211,7 +211,7 @@ numberOfAircraft = 0
 availableGates = [98, 36, 35, 34, 97]
 occupiedGates = []
 seedtype = 0
-boarding_time = 3
+# boarding_time = 3
 gatechoice = 0
 
 print("Simulation Started")
@@ -251,19 +251,24 @@ while running:
         timer.sleep(visualization_speed)
 
     seedtype += 2
-    if (t % 2 == 0): # use this
+    if (t % 2 == 0):  # use this
         if len(availableGates) > 0:
-            gatechoice += 1
-            if gatechoice == 5:
-                gatechoice = 0
-
             random.seed(seedtype)
-            entry = random.choice([37, 38])
-            goal = availableGates[gatechoice]
-            #availableGates.remove(goal)
-            #occupiedGates.append(goal)
 
-            ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict)
+            weight_classes = ["heavy", "small"]  # List
+            weight_class = random.choice(weight_classes)  # Chooses from list
+            if weight_class == "heavy":
+                entry = 37
+            elif weight_class == "small":
+                entry = 38
+            else:
+                print("no weightclass")
+            # print(weight_class)
+            goal = random.choice(availableGates)
+            availableGates.remove(goal)
+            occupiedGates.append(goal)
+
+            ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict, weight_class)
             aircraft_lst.append(ac)
             aircraftplanner()
             numberOfAircraft += 1
@@ -272,7 +277,8 @@ while running:
         if ac.status == "at_gate":
             ac.status = "boarding {}".format(t)
     for ac in aircraft_lst:
-        if ac.status == "boarding {}".format(t-boarding_time):
+        if ac.status == "boarding {}".format(t-ac.boarding_time):
+            print(ac.id, ac.weight_class, ac.boarding_time)
             ac.status = "boarding completed"
 
     for ac in aircraft_lst:

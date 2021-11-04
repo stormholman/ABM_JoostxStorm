@@ -38,6 +38,30 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                             if abs(ac2.position[1] - ac1.position[1]) / abs(ac1.position[0] - ac2.position[0]) <= (1.5/1.5):
                                 ac1.observations.append(ac2)
 
+                if ac1.position == (1.5, 5) or ac1.position == (1.5, 4): # don't let aircraft depart at the same time from rw 1 or 2
+                    if ac2.position == (1.5, 5) or ac2.position == (1.5, 4):
+                        if ac1.weight_class == "heavy" and ac2.weight_class == "small":  # smallest aircraft gives way
+                            constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
+                            constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
+                        elif ac1.weight_class == "small" and ac2.weight_class == "heavy":
+                            constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
+                            constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
+                        else:
+                            if ac1.id < ac2.id:  # largest id gives way
+                                constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
+                                constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
+                            else:
+                                constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
+                                constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
+                        print("constr", constraints)
+                        run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                                  ac1.lastdifferentnode)
+                        run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
+                                  ac2.lastdifferentnode)
+
+
+
+
         nextintersection = find_next_intersection(ac1)
         nextlinkage = find_next_linkage(ac1)
 
@@ -138,12 +162,17 @@ def determine_right_of_way(ac1, ac2, conflictnode):
             return ac1, ac2
 
     if index1 == index2:
-        if ac1.id < ac2.id:
+        if ac1.weight_class == "heavy" and ac2.weight_class == "small": # smallest aircraft gives way
             return ac1, ac2 # winner, loser
-        else:
+        elif ac1.weight_class == "small" and ac2.weight_class == "heavy":
             return ac2, ac1
+        else:
+            if ac1.id < ac2.id: # largest id gives way
+                return ac1, ac2  # winner, loser
+            else:
+                return ac2, ac1
     else:
-        if index1 < index2:
+        if index1 < index2: # largest index gives way
             return ac1, ac2 # winner, loser
         else:
             return ac2, ac1
