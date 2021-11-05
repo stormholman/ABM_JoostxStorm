@@ -39,6 +39,20 @@ def run_prioritized_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t)
     #                     # simple_single_agent_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
     #                     #           ac2.lastdifferentnode)
     #                     print("Aircraft", ac2.id, "waits due to heavy vortex from aircraft", ac1.id)
+    
+    
+    # if len(ac.path_to_goal) > 2 and len(otheraircraft.path_to_goal) > 2:
+#     if ac.path_to_goal[-2][1] == otheraircraft.path_to_goal[-2][1]:
+#         if ac.weight_class == "Heavy" and otheraircraft.weight_class == "Small":  # smallest aircraft gives way
+#             constraints.append({'agent': ac.id, 'loc': ac.path_to_goal[-1][0], 'timestep': ac.path_to_goal[-1][1]})
+#         elif ac.weight_class == "Small" and otheraircraft.weight_class == "Heavy":
+#             constraints.append({'agent': otheraircraft.id, 'loc': otheraircraft.path_to_goal[-1][0], 'timestep': otheraircraft.path_to_goal[-1][1]})
+#         else:
+#             if ac.id < otheraircraft.id:  # largest id gives way
+#                 constraints.append({'agent': otheraircraft.id, 'loc': otheraircraft.path_to_goal[-1][0], 'timestep': otheraircraft.path_to_goal[-1][1]})
+#             else:
+#                 constraints.append({'agent': ac.id, 'loc': ac.path_to_goal[-1][0],
+#                                     'timestep': ac.path_to_goal[-1][1]})
 
     for ac in aircraft_lst:
         if ac.spawntime == t or ac.departtime == t:
