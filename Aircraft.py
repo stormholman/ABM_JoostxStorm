@@ -40,11 +40,13 @@ class Aircraft(object):
         self.status = "taxiing"
         self.gate = goal_node  # (gate, arrival time)
         self.route = [start_node]
+        self.route_time = [(start_node, spawn_time)]
         self.total_path = []  # path to goal including current node
         self.path_to_goal = []  # planned path left from current location
         self.from_to = [0, 0]
         self.lastdifferentnode = None
         self.constraints = []
+        self.waiting_time = 0
 
         # State related
         self.heading = 0
@@ -99,6 +101,7 @@ class Aircraft(object):
 
         if t % 0.5 == 0:
             self.route.append(to_node)
+            self.route_time.append((to_node, t + 0.5))
 
         # Update position with rounded values
         if xy_to[0] - xy_from[0] == 0 and xy_to[1] - xy_from[1] == 0:
@@ -162,6 +165,10 @@ class Aircraft(object):
                     self.status = "departed"
                     self.takeofftime = t
                     self.from_to = [0, 0]
+                    for step in self.route_time: # determine time waited for other ac's to pass
+                        for next_step in self.route_time:
+                            if step[0] == next_step[0] and step[1] == next_step[1] + 0.5:
+                                self.waiting_time += 0.5
                     # print('Aircraft', self.id, self.status, ". Total route: ")
                     # print(self.route, print("(Length: ", len(self.route), ", Time spend: ",
                     #                         round(self.departtime - self.spawntime + 0.1), ")"))
