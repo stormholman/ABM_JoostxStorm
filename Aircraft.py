@@ -28,8 +28,8 @@ class Aircraft(object):
         self.nodes_dict = nodes_dict  # keep copy of nodes dict
         self.waittime = 3
         self.gatearrival = None
-        self.departtime = None
-        self.takeofftime = None
+        self.departtime = None #Leaving gate
+        self.takeofftime = None # Leave airfield
         self.weight_class = weight_class
         if self.weight_class == "Heavy":
             self.boarding_time = 4
@@ -227,6 +227,3 @@ class Aircraft(object):
         # Check the path
         if path[0][1] != t:
             raise Exception("Something is wrong with the timing of the path planning")
-
-        def plan_distributed(self, nodes_dict, edges_dict, heuristics, t):
-            pass

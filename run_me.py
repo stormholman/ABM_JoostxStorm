@@ -27,7 +27,7 @@ traffic_agents = []
 
 #Parameters that can be changed:
 simulation_time = 100
-planner = "Distributed" #choose which planner to use (currently only Independent is implemented)
+planner = "CBS" #choose which planner to use (currently only Independent is implemented)
 
 #Visualization (can also be changed)
 plot_graph = False    #show graph representation in NetworkX

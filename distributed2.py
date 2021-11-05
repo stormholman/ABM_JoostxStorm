@@ -38,33 +38,33 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                             elif ac2.from_to[0] == ac1.goal: #ac1 knows if gate is occupied
                                 ac1.observations.append(ac2)
 
-                        if ac1.position == (1.5, 5) or ac1.position == (1.5, 4): # don't let aircraft depart avyt the same time from rw 1 or 2
-                            if ac2.position == (1.5, 5) or ac2.position == (1.5, 4):
-                                if ac1.weight_class == "Heavy" and ac2.weight_class == "Small":  # smallest aircraft gives way
-                                    constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
-                                    constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
-                                elif ac1.weight_class == "Small" and ac2.weight_class == "Heavy":
-                                    constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
-                                    constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
-                                else:
-                                    if ac1.id < ac2.id:  # largest id gives way
-                                        constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
-                                        constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
-                                    else:
-                                        constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
-                                        constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
-                                # print("constr", constraints)
-                                run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
-                                          ac1.lastdifferentnode)
-                                run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
-                                          ac2.lastdifferentnode)
+                        # if ac1.position == (1.5, 5) or ac1.position == (1.5, 4): # don't let aircraft depart avyt the same time from rw 1 or 2
+                        #     if ac2.position == (1.5, 5) or ac2.position == (1.5, 4):
+                        #         if ac1.weight_class == "Heavy" and ac2.weight_class == "Small":  # smallest aircraft gives way
+                        #             constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
+                        #             constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
+                        #         elif ac1.weight_class == "Small" and ac2.weight_class == "Heavy":
+                        #             constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
+                        #             constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
+                        #         else:
+                        #             if ac1.id < ac2.id:  # largest id gives way
+                        #                 constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 0.5})
+                        #                 constraints.append({'agent': ac2.id, 'loc': 2, 'timestep': t + 0.5})
+                        #             else:
+                        #                 constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
+                        #                 constraints.append({'agent': ac1.id, 'loc': 2, 'timestep': t + 0.5})
+                        #         # print("constr", constraints)
+                        #         run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                        #                   ac1.lastdifferentnode)
+                        #         run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
+                        #                   ac2.lastdifferentnode)
 
-                        if ac1.position == (1.5, 4): # small ac waits 0.5 sec for vertex turbulence to disappear caused by heavy ac
-                            if ac2.position == (2, 5) and ac2.path_to_goal[0][0] == 95:
-                                constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 1})
-                                run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
-                                          ac2.lastdifferentnode)
-                                #print("Aircraft", ac2.id, "waits due to heavy vortex from aircraft", ac1.id)
+                        # if ac1.position == (1.5, 4): # small ac waits 0.5 sec for vertex turbulence to disappear caused by heavy ac
+                        #     if ac2.position == (2, 5) and ac2.path_to_goal[0][0] == 95:
+                        #         constraints.append({'agent': ac2.id, 'loc': 1, 'timestep': t + 1})
+                        #         run_astar(ac2, nodes_dict, ac2.from_to[0], ac2.goal, heuristics, t, constraints,
+                        #                   ac2.lastdifferentnode)
+                        #         #print("Aircraft", ac2.id, "waits due to heavy vortex from aircraft", ac1.id)
 
 
                 nextintersection = find_next_intersection(ac1)
