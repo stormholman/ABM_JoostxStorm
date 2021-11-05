@@ -115,7 +115,7 @@ class Aircraft(object):
 
         # Create field of view
         if self.heading == 0:
-            self.fieldofview = [(self.position[0] - 1.5, self.position[1] + 1.5),
+            self.fieldofview = [(self.position[0] - 1.5, self.position[1] + 1.5 ),
                                 (self.position[0] + 1.5, self.position[1] + 1.5)]
         if self.heading == 90:
             self.fieldofview = [(self.position[0] - 1.5, self.position[1] - 1.5),
@@ -145,21 +145,25 @@ class Aircraft(object):
                         self.goal = 1
                     self.type = "D"
 
-                    # # remove node 56 as a route option. This is to prevent congestion at runway exits.
-                    # self.nodes_dict[11]['neighbors'] = {11.0, 55.0, 62.0}
-                    # self.nodes_dict[12]['neighbors'] = {12.0, 57.0, 63.0}
-                    #
+                    # remove node 56 as a route option. This is to prevent congestion at runway exits.
+                    self.nodes_dict[11]['neighbors'] = {11.0, 62.0}
+                    self.nodes_dict[12]['neighbors'] = {12.0, 63.0}
+
                     # # remove node 44 to prevent "clogged taxiways" (this is the easy way out)
-                    self.nodes_dict[4]['neighbors'] = {43.0, 4.0, 95.0}
-                    self.nodes_dict[5]['neighbors'] = {96.0, 5.0, 45.0}
+                    # self.nodes_dict[4]['neighbors'] = {43.0, 4.0, 95.0, 44.0}
+                    # self.nodes_dict[5]['neighbors'] = {96.0, 5.0, 45.0, 44.0}
+
+                    # # remove node 44 to prevent "clogged taxiways" (this is the easy way out)
+                    self.nodes_dict[24]['neighbors'] = {74.0, 83.0, 79.0}
+                    self.nodes_dict[28]['neighbors'] = {78.0, 82.0, 87.0}
 
                 elif self.type == "D":
                     self.status = "departed"
                     self.departtime = t
                     self.from_to = [0, 0]
-                    print('Aircraft', self.id, self.status, ". Total route: ")
-                    print(self.route, print("(Length: ", len(self.route), ", Time spend: ",
-                                            round(self.departtime - self.spawntime + 0.1), ")"))
+                    # print('Aircraft', self.id, self.status, ". Total route: ")
+                    # print(self.route, print("(Length: ", len(self.route), ", Time spend: ",
+                    #                         round(self.departtime - self.spawntime + 0.1), ")"))
 
             else:  # current to_node is reached, update the remaining path
                 remaining_path = self.path_to_goal

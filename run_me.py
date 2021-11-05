@@ -258,7 +258,7 @@ while running:
         timer.sleep(visualization_speed)
 
     seedtype += 2
-    if (t % 3 == 0):
+    if (t % 2 == 0):
         #if len(availableGates) > 0:
         if activeAircraft < 15:
             random.seed(seedtype)
@@ -280,6 +280,7 @@ while running:
 
             ac = Aircraft(numberOfAircraft, 'A', entry, goal, t, nodes_dict, weight_class)
             aircraft_lst.append(ac)
+
             aircraftplanner()
             numberOfAircraft += 1
 

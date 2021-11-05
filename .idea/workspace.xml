@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="709490ea-a87f-412b-be6a-31b971dc3615" name="Changes" comment="Fixed major problem that froze program">
+      <change beforePath="$PROJECT_DIR$/Aircraft.py" beforeDir="false" afterPath="$PROJECT_DIR$/Aircraft.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/distributed2.py" beforeDir="false" afterPath="$PROJECT_DIR$/distributed2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_me.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_me.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/single_agent_planner.py" beforeDir="false" afterPath="$PROJECT_DIR$/single_agent_planner.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="ProjectId" id="20Kbd10SAzjhHmsQeGeds8PqslG" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+  </component>
+  <component name="RunManager">
+    <configuration name="run_me" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\jtava\AppData\Local\Programs\Python\Python38-32\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/run_me.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.run_me" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="709490ea-a87f-412b-be6a-31b971dc3615" name="Changes" comment="" />
+      <created>1635796312733</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1635796312733</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Boarding aircraft are visible">
+      <created>1635886775435</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1635886775435</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Boarding aircraft are visible">
+      <created>1635896900759</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1635896900759</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Boarding aircraft are visible">
+      <created>1635896918380</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1635896918380</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Boarding aircraft are visible">
+      <created>1635897370743</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1635897370743</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Changed linkage constraints">
+      <created>1635957401226</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1635957401226</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Na gesprek">
+      <created>1635971924150</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1635971924150</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Visualize observations">
+      <created>1635976301845</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1635976301845</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Visualize observations">
+      <created>1636021442701</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1636021442701</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Visualize observations hopefully">
+      <created>1636021613442</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1636021613442</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Visualize observations hopefully">
+      <created>1636022118150</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1636022118150</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Added spawn restriction based on active a/c. Revamped observation check. Reworked some constraints.">
+      <created>1636057447653</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1636057447653</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Fixed major problem that froze program">
+      <created>1636067654770</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1636067654770</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Boarding aircraft are visible" />
+    <MESSAGE value="Changed linkage constraints" />
+    <MESSAGE value="Na gesprek" />
+    <MESSAGE value="Visualize observations" />
+    <MESSAGE value="Visualize observations hopefully" />
+    <MESSAGE value="Added spawn restriction based on active a/c. Revamped observation check. Reworked some constraints." />
+    <MESSAGE value="Fixed major problem that froze program" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed major problem that froze program" />
+  </component>
+</project>

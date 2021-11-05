@@ -18,19 +18,27 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                 ac1.plan_independent(nodes_dict, edges_dict, heuristics, t)
 
             # Create awareness
+            nodes_in_view= set()
+            for neighbor in ac1.nodes_dict[ac1.from_to[1]]["neighbors"]:
+                if neighbor != ac1.from_to[0] and neighbor != ac1.from_to[1]:
+                    nodes_in_view.add(neighbor)
+                    for nextneighbor in ac1.nodes_dict[neighbor]["neighbors"]:
+                        if nextneighbor not in nodes_in_view:
+                            nodes_in_view.add(nextneighbor)
+
             for ac2 in aircraft_lst:
                 if ac2.status != "departed":
                     if ac1 != ac2:
-                        if ac1.position and ac1.fieldofview and ac2.position and ac2.fieldofview:
-                            if in_view(ac1.position, ac1.fieldofview[0], ac1.fieldofview[1], ac2.position):
-                                ac1.observations.append(ac2)
-                            elif ac2.from_to[0] in ac1.nodes_dict[ac1.from_to[0]]["neighbors"]:
-                                if ac2.from_to[0] != ac1.lastdifferentnode:
+                        if ac2.from_to[0] in nodes_in_view:
+                            ac1.observations.append(ac2)
+                        if ac2 not in ac1.observations:
+                            if ac1.position and ac1.fieldofview and ac2.position and ac2.fieldofview:
+                                if in_view(ac1.position, ac1.fieldofview[0], ac1.fieldofview[1], ac2.position):
                                     ac1.observations.append(ac2)
                             elif ac2.from_to[0] == ac1.goal: #ac1 knows if gate is occupied
                                 ac1.observations.append(ac2)
 
-                        if ac1.position == (1.5, 5) or ac1.position == (1.5, 4): # don't let aircraft depart at the same time from rw 1 or 2
+                        if ac1.position == (1.5, 5) or ac1.position == (1.5, 4): # don't let aircraft depart avyt the same time from rw 1 or 2
                             if ac2.position == (1.5, 5) or ac2.position == (1.5, 4):
                                 if ac1.weight_class == "Heavy" and ac2.weight_class == "Small":  # smallest aircraft gives way
                                     constraints.append({'agent': ac1.id, 'loc': 1, 'timestep': t + 0.5})
@@ -63,6 +71,20 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                 nextlinkage = find_next_linkage(ac1)
 
                 for observation in ac1.observations:
+                    if 44.0 in observation.from_to:
+
+                        if observation.heading == 0:
+                            constraints.append({'agent': ac1.id, 'loc': 4, 'timestep': t + 0.5})
+                        if observation.heading == 180:
+                            constraints.append({'agent': ac1.id, 'loc': 5, 'timestep': t + 0.5})
+
+                        run_astar(ac1, nodes_dict, ac1.from_to[0], ac1.goal, heuristics, t, constraints,
+                                  ac1.lastdifferentnode)
+
+                        nextintersection = find_next_intersection(ac1)
+                        nextlinkage = find_next_linkage(ac1)
+
+
                     if observation.from_to[0] == ac1.goal:
                         for neighbor in ac1.nodes_dict[ac1.goal]["neighbors"]:
                             for nextneighbour in ac1.nodes_dict[neighbor]["neighbors"]:
@@ -124,6 +146,11 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                             constraints.append({'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 0.5})
                             constraints.append({'agent': loser.id, 'loc': nextintersection['id'], 'timestep': t + 1})
 
+                            if ac1.id == 8:
+                                if observation.id == 1:
+                                    print(constraints)
+                                    print(loser.from_to)
+
                             run_astar(loser, nodes_dict, loser.from_to[0], loser.goal, heuristics, t, constraints, loser.lastdifferentnode)
 
                             nextintersection = find_next_intersection(ac1)
@@ -149,19 +176,25 @@ def run_distributed_planner(aircraft_lst, nodes_dict, edges_dict, heuristics, t,
                             #         print("Neither", ac1.id, "nor", ac2.id,  "can detour for conflict at", nextlinkage)
                             # else:
                             winner, loser = determine_right_of_way(ac1, observation, nextlinkage)
-                            # print(loser.id, 'giving way')
+                            if ac1.id == 8:
+                                if observation.id == 1:
+                                    print(t)
+                                    print(nextlinkage)
+                                    print(find_next_linkage(observation))
+                                    print(loser.id, 'giving way')
+                            constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t})
                             constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
                             constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1})
                             constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 1.5})
                             constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2})
                             constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 2.5})
                             constraints.append({'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 3}) # discuss
-
-                            # print("added constraint:", {'agent': winner.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
-                            # print("added constraint:", {'agent': loser.id, 'loc': nextlinkage['id'], 'timestep': t + 0.5})
+                            if ac1.id == 8:
+                                if observation.id == 1:
+                                    print(constraints)
+                                    print(loser.from_to)
                             # print(constraints)
 
-                            run_astar(winner, nodes_dict, winner.from_to[0], winner.goal, heuristics, t, constraints, winner.lastdifferentnode)
                             run_astar(loser, nodes_dict, loser.from_to[0], loser.goal, heuristics, t, constraints, loser.lastdifferentnode)
 
                             nextintersection = find_next_intersection(ac1)
@@ -187,9 +220,9 @@ def determine_right_of_way(ac1, ac2, conflictnode):
             return ac1, ac2
 
     if index1 == index2:
-        if ac1.weight_class == "heavy" and ac2.weight_class == "small": # smallest aircraft gives way
+        if ac1.weight_class == "Heavy" and ac2.weight_class == "Heavy": # smallest aircraft gives way
             return ac1, ac2 # winner, loser
-        elif ac1.weight_class == "small" and ac2.weight_class == "heavy":
+        elif ac1.weight_class == "Small" and ac2.weight_class == "Small":
             return ac2, ac1
         else:
             if ac1.id < ac2.id: # largest id gives way

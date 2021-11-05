@@ -99,15 +99,12 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
     # constraint_table = build_constraint_table(constraints, agent)
     #print('Running astar for agent', agent, ', constraints: ', constraints)
     while len(open_list) > 0:
-
-
-
-        # print(len(open_list))
         curr = pop_node(open_list)
         if curr['loc'] == goal_node_id and curr['timestep'] >= earliest_goal_timestep:
             return True, get_path(curr)
 
-        nodes_dict[curr['loc']]["neighbors"].add(curr['loc'])  # Also consider "waiting"
+        if curr['loc'] not in {97, 34, 35, 36, 98}:
+            nodes_dict[curr['loc']]["neighbors"].add(curr['loc'])  # Also consider "waiting"
 
         for neighbor in nodes_dict[curr['loc']]["neighbors"]:
             child = {'loc': neighbor,
@@ -135,7 +132,6 @@ def simple_single_agent_astar(agent, nodes_dict, from_node, goal_node, heuristic
             ### New ###
             if child['loc'] == lastdifferentnode:
                 continue
-
 
             if (child['loc'], child['timestep']) in closed_list:
                 existing_node = closed_list[(child['loc'], child['timestep'])]
