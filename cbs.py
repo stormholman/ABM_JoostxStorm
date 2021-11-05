@@ -136,7 +136,11 @@ def detect_first_collision(path1, path2):
             # print(path1[timestep], path2[timestep + 1])
             # print(path1[timestep + 1], path2[timestep])
             if path1[timestep][0] == path2[timestep + 1][0] and path1[timestep + 1][0] == path2[timestep][0]:
-                return [path1[timestep], path1[timestep + 1]]
+                return [path1[timestep], path1[timestep + 1
+            # if path1[timestep][0] == 96 or path1[timestep][0] == 95:
+#     if path2[timestep][0] == 96 or path2[timestep][0] == 95:
+#         print(True)
+#         return [path1[timestep], path1[timestep + 1]]
     return None
 
 
