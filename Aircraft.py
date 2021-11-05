@@ -29,6 +29,7 @@ class Aircraft(object):
         self.waittime = 3
         self.gatearrival = None
         self.departtime = None
+        self.takeofftime = None
         self.weight_class = weight_class
         if self.weight_class == "Heavy":
             self.boarding_time = 4
@@ -159,7 +160,7 @@ class Aircraft(object):
 
                 elif self.type == "D":
                     self.status = "departed"
-                    self.departtime = t
+                    self.takeofftime = t
                     self.from_to = [0, 0]
                     # print('Aircraft', self.id, self.status, ". Total route: ")
                     # print(self.route, print("(Length: ", len(self.route), ", Time spend: ",

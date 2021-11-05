@@ -229,6 +229,13 @@ while running:
         running = False
         pg.quit()
         print("Simulation Stopped")
+        print("------------------------------------------------------------------")
+        print("Handled aircraft: " + str(len(aircraft_lst) - activeAircraft))
+        for ac in aircraft_lst:
+            if ac.status == "departed":
+                print('Aircraft', ac.id)
+                print(ac.route, print("(Length: ", len(ac.route), ", Time spend: ",
+                                        round(ac.takeofftime - ac.spawntime + 0.1), ")"))
         break
 
     activeAircraft = 0
@@ -259,7 +266,7 @@ while running:
 
     seedtype += 2
     if (t % 2 == 0):
-        #if len(availableGates) > 0:
+        #print(activeAircraft)
         if activeAircraft < 15:
             random.seed(seedtype)
             weight_classes = ["Heavy", "Small"]  # List
