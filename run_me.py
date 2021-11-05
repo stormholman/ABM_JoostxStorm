@@ -27,12 +27,12 @@ traffic_agents = []
 
 #Parameters that can be changed:
 simulation_time = 100
-planner = "CBS" #choose which planner to use (currently only Independent is implemented)
+planner = "Distributed" #choose which planner to use (currently only Independent is implemented)
 
 #Visualization (can also be changed)
 plot_graph = False    #show graph representation in NetworkX
 visualization = True        #pygame visualization
-visualization_speed = 0.01 #set at 0.1 as default
+visualization_speed = 0.001 #set at 0.1 as default
 
 #%%Function definitions
 def import_layout(nodes_file, edges_file, traffic_agents):
@@ -44,15 +44,15 @@ def import_layout(nodes_file, edges_file, traffic_agents):
     RETURNS:
         - nodes_dict = dictionary with nodes and node properties
         - edges_dict = dictionary with edges annd edge properties
-        - start_and_goal_locations = dictionary with node ids for arrival runways, departure runways and gates 
+        - start_and_goal_locations = dictionary with node ids for arrival runways, departure runways and gates
     """
     gates_xy = []   #lst with (x,y) positions of gates
     rwy_dep_xy = [] #lst with (x,y) positions of entry points of departure runways
     rwy_arr_xy = [] #lst with (x,y) positions of exit points of arrival runways
-    
+
     df_nodes = pd.read_excel(os.getcwd() + "/" + nodes_file)
     df_edges = pd.read_excel(os.getcwd() + "/" + edges_file)
-    
+
     #Create nodes_dict from df_nodes
     nodes_dict = {}
     for i, row in df_nodes.iterrows():
@@ -66,7 +66,7 @@ def import_layout(nodes_file, edges_file, traffic_agents):
                            }
         node_id = row["id"]
         nodes_dict[node_id] = node_properties
-        
+
         #Add node type
         if row["type"] == "rwy_d":
             rwy_dep_xy.append((row["x_pos"],row["y_pos"]))
@@ -85,7 +85,7 @@ def import_layout(nodes_file, edges_file, traffic_agents):
                                                 node_properties["heading"]))
 
     #Specify node ids of gates, departure runways and arrival runways in a dict
-    start_and_goal_locations = {"gates": gates_xy, 
+    start_and_goal_locations = {"gates": gates_xy,
                                 "dep_rwy": rwy_dep_xy,
                                 "arr_rwy": rwy_arr_xy}
 
@@ -125,7 +125,7 @@ def import_layout(nodes_file, edges_file, traffic_agents):
         from_node = edge[0]
         to_node = edge[1]
         nodes_dict[from_node]["neighbors"].add(to_node)
-    
+
     return nodes_dict, edges_dict, start_and_goal_locations
 
 def xy_to_node(xy):
@@ -136,7 +136,7 @@ def xy_to_node(xy):
 
 def create_graph(nodes_dict, edges_dict, plot_graph = True):
     """
-    Creates networkX graph based on nodes and edges and plots 
+    Creates networkX graph based on nodes and edges and plots
     INPUT:
         - nodes_dict = dictionary with nodes and node properties
         - edges_dict = dictionary with edges annd edge properties
@@ -144,29 +144,29 @@ def create_graph(nodes_dict, edges_dict, plot_graph = True):
     RETURNS:
         - graph = networkX graph object
     """
-    
+
     graph = nx.DiGraph() #create directed graph in NetworkX
-    
+
     #Add nodes and edges to networkX graph
     for node in nodes_dict.keys():
-        graph.add_node(node, 
+        graph.add_node(node,
                        node_id = nodes_dict[node]["id"],
                        xy_pos = nodes_dict[node]["xy_pos"],
                        node_type = nodes_dict[node]["type"])
-        
+
     for edge in edges_dict.keys():
-        graph.add_edge(edge[0], edge[1], 
+        graph.add_edge(edge[0], edge[1],
                        edge_id = edge,
                        from_node =  edges_dict[edge]["from"],
                        to_node = edges_dict[edge]["to"],
                        weight = edges_dict[edge]["length"])
-    
+
     #Plot networkX graph
     if plot_graph:
         plt.figure()
         node_locations = nx.get_node_attributes(graph, 'xy_pos')
         nx.draw(graph, node_locations, with_labels=True, node_size=100, font_size=10)
-        
+
     return graph
 
 def aircraftplanner():
@@ -200,8 +200,8 @@ if visualization:
 # =============================================================================
 # 1. While loop and visualization
 # =============================================================================
- 
-#Start of while loop    
+
+#Start of while loop
 running=True
 escape_pressed = False
 time_end = simulation_time
@@ -225,17 +225,27 @@ while running:
         aircraftplanner()
 
     #Check conditions for termination
-    if t >= time_end or escape_pressed: 
+    if t >= time_end or escape_pressed:
         running = False
         pg.quit()
         print("Simulation Stopped")
         print("------------------------------------------------------------------")
         print("Handled aircraft: " + str(len(aircraft_lst) - activeAircraft))
+
+        result_file = open("results.csv", "w", buffering=1)
+        result_file.write("{}\n".format("Handled aircraft: " + str(len(aircraft_lst) - activeAircraft)))
+        result_file.write("{}, {}\n".format("Random seed type: " + str(seedtype), "Spawn every 3 seconds"))
+        # add schedule
+
+        result_file.write("{}, {}, {}, {}, {}, {}, {}, {}, {}\n".format("Aircraft ID", "Weight class", "Spawn time", "Departure time", "Take-off time", "time spend", "Length", "waiting time", "path"))
         for ac in aircraft_lst:
             if ac.status == "departed":
+                result_file.write("{}, {}, {}, {}, {}, {}, {}, {}, {}\n".format(ac.id, ac.weight_class, ac.spawntime, ac.departtime, ac.takeofftime, round(ac.takeofftime - ac.spawntime + 0.1),
+                                                                            len(ac.route), ac.waiting_time, ac.route_time))
                 print('Aircraft', ac.id)
                 print(ac.route, print("(Length: ", len(ac.route), ", Time spend: ",
                                         round(ac.takeofftime - ac.spawntime + 0.1), ")"))
+        result_file.close()
         break
 
     activeAircraft = 0
@@ -243,7 +253,7 @@ while running:
         if ac.status != "departed":
             activeAircraft += 1
 
-    
+
     #Visualization: Update map if visualization is true
     if visualization:
         current_states = {} #Collect current states of all aircraft
